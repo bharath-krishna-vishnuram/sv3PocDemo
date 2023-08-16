@@ -1,8 +1,34 @@
 {
   "culture": "de",
   "texts": {
-    "Menu:Home": "Home",
+    "Menu:Home": "Startseite",
     "Welcome": "Willkommen",
-    "LongWelcomeMessage": "Willkommen bei der Anwendung. Dies ist ein Startup-Projekt, das auf dem ABP-Framework basiert. Weitere Informationen finden Sie unter abp.io."
+    "LongWelcomeMessage": "Willkommen in der Anwendung. Dies ist ein Startup-Projekt, das die Möglichkeiten der modernen Webentwicklung präsentiert. Erfahren Sie, wie diese Anwendung Ihre Geschäftsabläufe transformieren und Ihnen helfen kann, eine globale Zielgruppe zu erreichen.",
+    "WelcomeMessage": "Herzlichen Glückwunsch!",
+    "ApplicationName": "MvcDemoApplication",
+    "IsRunning": "läuft erfolgreich!",
+    "WelcomeTitle": "Willkommen in der Anwendung",
+    "Login": "Anmelden",
+    "GetStartedTitle": "Starten Sie Ihre Reise",
+    "GetStartedDescription": "Beginnen Sie Ihre aufregende Reise mit unserer innovativen Webanwendung.",
+    "MeetAppTitle": "Lernen Sie MvcDemoApplication kennen",
+    "MeetAppDescription": "Eine vollständige Webanwendungsplattform, aufgebaut auf Innovation",
+    "AboutUsTitle": "Über uns",
+    "AboutUsDescription": "Wir sind ein Team leidenschaftlicher Entwickler, die sich der Schaffung innovativer Webanwendungen verschrieben haben.",
+    "ContactUsTitle": "Kontaktieren Sie uns",
+    "ContactUsDescription": "Wenn Sie Fragen oder Anfragen haben, können Sie sich gerne an uns wenden.",
+    "Email": "E-Mail:",
+    "Phone": "Telefon:",
+    "OurServicesTitle": "Unsere Dienstleistungen",
+    "OurServicesDescription": "Entdecken Sie unser breites Angebot an Dienstleistungen, die auf Ihre geschäftlichen Anforderungen zugeschnitten sind.",
+    "Testimonial1Text": "\"Diese Anwendung hat unsere Geschäftsabläufe transformiert. Sehr empfehlenswert!\"",
+    "Testimonial1Author": "- John Doe, CEO bei Acme Inc.",
+    "Testimonial2Text": "\"Die Lokalisierungsfunktion dieser Anwendung hat es uns erleichtert, eine globale Zielgruppe anzusprechen.\"",
+    "Testimonial2Author": "- Jane Smith, Marketingmanagerin",
+    "Testimonial3Text": "\"Wir konnten unseren Arbeitsablauf optimieren und eine bemerkenswerte Effizienz mit dieser Anwendung erreichen.\"",
+    "Testimonial3Author": "- Emily Johnson, Betriebsleiterin",
+    "Testimonial4Text": "\"Die benutzerfreundliche Benutzeroberfläche und die leistungsstarken Funktionen dieser Anwendung haben unsere Erwartungen übertroffen.\"",
+    "Testimonial4Author": "- Alex Lee, IT-Direktor",
+    "FooterCopyright": "&copy; 2023 MvcDemoApplication. Alle Rechte vorbehalten."
   }
 }

@@ -5,12 +5,10 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace PDM.Models;
 
-//[Index("UniqueTextId", IsUnique = true)]
-public class TextElement : AuditedAggregateRoot<Guid>
+public class TextElement : FullAuditedAggregateRoot<Guid>
 {
     protected TextElement()
     {
-        IsActive = true;
     }
     private TextElement(string name, string uniqueString) : this()
     {
@@ -29,7 +27,6 @@ public class TextElement : AuditedAggregateRoot<Guid>
     public bool IsComponent { get; set; }
     public bool IsDescriptor { get; set; }
     public bool IsOption { get; set; }
-    public bool IsActive { get; set; }
     //public bool ReplaceID { get; set; } // This can be changed back to string or another type if 'Y'/'N' was not the intended data.
     public string? German { get; set; }
     public string? French { get; set; }
@@ -37,10 +34,10 @@ public class TextElement : AuditedAggregateRoot<Guid>
     public string? Russian { get; set; }
     public string? Chinese { get; set; }
     public string? Remarks { get; set; }
-    public List<Structure> Structures { get; set; }
-    public List<Component> Components { get; set; }
-    public List<ComponentDescriptor> ComponentDescriptors { get; set; }
-    public List<DescriptorOption> DescriptorOptions { get; set; }
+    public List<Structure> Structures { get; set; } = new();
+    public List<Component> Components { get; set; } = new();
+    public List<ComponentDescriptor> ComponentDescriptors { get; set; } = new();
+    public List<DescriptorOption> DescriptorOptions { get; set; } = new();
 
     public static List<TextElement> GetAllTextElements()
     {

@@ -133,6 +133,15 @@ public class MvcDemoApplicationDbContext :
                 e.Navigation(option => option.Name).AutoInclude();
             });
 
+        builder.Entity<TextElement>(
+            e =>
+            {
+                e.HasIndex(option => new { option.IsDeleted, option.UniqueTextId })
+                .IsUnique(true)
+                .HasFilter("IsDeleted = 0");
+            });
+
+
         //builder.Entity<YourEntity>(b =>
         //{
         //    b.ToTable(MvcDemoApplicationConsts.DbTablePrefix + "YourEntities", MvcDemoApplicationConsts.DbSchema);

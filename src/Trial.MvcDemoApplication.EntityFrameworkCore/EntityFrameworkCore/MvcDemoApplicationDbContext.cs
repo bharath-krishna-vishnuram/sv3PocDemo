@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PDM.Models;
+using System.Reflection.Emit;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -24,6 +27,12 @@ public class MvcDemoApplicationDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
+    public DbSet<TextElement> TextElements { get; set; }
+    public DbSet<Structure> Structures { get; set; }
+    public DbSet<StructureElement> StructureElements { get; set; }
+    public DbSet<Component> Components { get; set; }
+    //public DbSet<ComponentDescriptor> ComponentDescriptors { get; set; }
+    public DbSet<DescriptorOption> Options { get; set; }
 
     #region Entities from the modules
 
@@ -59,6 +68,13 @@ public class MvcDemoApplicationDbContext :
 
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.EnableSensitiveDataLogging();
+
+        base.OnConfiguring(optionsBuilder); 
+    }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -75,6 +91,47 @@ public class MvcDemoApplicationDbContext :
         builder.ConfigureTenantManagement();
 
         /* Configure your own tables/entities inside here */
+
+        builder.Entity<Structure>(
+            e =>
+            {
+                e.HasOne(structure => structure.Name)
+                .WithMany(text => text.Structures)
+                .OnDelete(DeleteBehavior.NoAction);
+                e.Navigation(structure => structure.Name).AutoInclude();
+            });
+
+        builder.Entity<StructureElement>()
+            .HasOne(element => element.AssociatedStructure)
+                .WithMany(structure => structure.StructureElements)
+                .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<Component>(
+            e =>
+            {
+                e.HasOne(Component => Component.Name)
+                .WithMany(text => text.Components)
+                .OnDelete(DeleteBehavior.NoAction);
+                e.Navigation(Component => Component.Name).AutoInclude();
+            });
+
+        builder.Entity<ComponentDescriptor>(
+            e =>
+            {
+                e.HasOne(descriptor => descriptor.Name)
+                .WithMany(text => text.ComponentDescriptors)
+                .OnDelete(DeleteBehavior.NoAction);
+                e.Navigation(descriptor => descriptor.Name).AutoInclude();
+            });
+
+        builder.Entity<DescriptorOption>(
+            e =>
+            {
+                e.HasOne(option => option.Name)
+                .WithMany(text => text.DescriptorOptions)
+                .OnDelete(DeleteBehavior.NoAction);
+                e.Navigation(option => option.Name).AutoInclude();
+            });
 
         //builder.Entity<YourEntity>(b =>
         //{

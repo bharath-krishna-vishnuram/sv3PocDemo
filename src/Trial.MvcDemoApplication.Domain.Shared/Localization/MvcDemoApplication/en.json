@@ -3,6 +3,32 @@
   "texts": {
     "Menu:Home": "Home",
     "Menu:Administration": "Home",
+
+    "Menu:PdmStore": "PDM",
+    "Menu:Structures": "Structures",
+    "Menu:Components": "Components",
+    "Menu:Discriptors": "Discriptors",
+    "Menu:Options": "Options",
+    "Menu:TextManager": "TextManager",
+
+    //PageHeaders
+    "PageHeaders:Structures": "Structures",
+    "PageHeaders:Components": "Components",
+    "PageHeaders:Discriptors": "Discriptors",
+    "PageHeaders:Options": "Options",
+    "PageHeaders:TextManager": "Text Manager",
+
+    //ColumnHeaders
+    "ColumnHeaders:IsStructure": "Is Structure",
+    "ColumnHeaders:IsComponent": "Is Component",
+    "ColumnHeaders:IsDescriptor": "Is Descriptor",
+    "ColumnHeaders:IsOption": "Is Option",
+    "ColumnHeaders:IsDeleted": "Is Removed",
+
+    "ColumnHeaders:UniqueId": "Unique Text Key",
+    "ColumnHeaders:CreationTime": "Creation Time",
+    "ColumnHeaders:LastUpdateTime": "Update Time",
+
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project designed to showcase the capabilities of modern web development. Explore how this application can transform your business operations and help you reach a global audience.",
     "WelcomeMessage": "Congratulations,",

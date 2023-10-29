@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Trial.MvcDemoApplication.Localization;
 using Trial.MvcDemoApplication.MultiTenancy;
 using Volo.Abp.Identity.Web.Navigation;
@@ -34,6 +35,8 @@ public class MvcDemoApplicationMenuContributor : IMenuContributor
             )
         );
 
+        ConfigureAdditionalMenuItems(context, l);
+
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
@@ -46,6 +49,44 @@ public class MvcDemoApplicationMenuContributor : IMenuContributor
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 3);
 
+
+
         return Task.CompletedTask;
+    }
+
+    private void ConfigureAdditionalMenuItems(MenuConfigurationContext context, Microsoft.Extensions.Localization.IStringLocalizer l)
+    {
+        var PdmMenu = new ApplicationMenuItem(
+                "PdmStore",
+                l["Menu:PdmStore"],
+                icon: "fa fa-Structure"
+            );
+        PdmMenu.AddItem(
+                new ApplicationMenuItem(
+                    "PdmStore.Structures",
+                    l["Menu:Structures"],
+                    url: "/PDM/Structures"
+                )
+            );
+        PdmMenu.AddItem(
+                new ApplicationMenuItem(
+                    "PdmStore.Components",
+                    l["Menu:Components"],
+                    url: "/PDM/Components"
+                ));
+        PdmMenu.AddItem(
+                new ApplicationMenuItem(
+                    "PdmStore.TextManager",
+                    l["Menu:TextManager"],
+                    url: "/PDM/TextManager"
+                ));
+        PdmMenu.AddItem(
+                new ApplicationMenuItem(
+                    "PdmStore.Options",
+                    l["Menu:Options"],
+                    url: "/PDM/Options"
+                ));
+        context.Menu.AddItem(PdmMenu);
+
     }
 }

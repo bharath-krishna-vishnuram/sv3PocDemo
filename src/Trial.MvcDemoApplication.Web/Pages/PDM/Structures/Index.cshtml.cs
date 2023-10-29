@@ -1,14 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text;
+using System.Threading.Tasks;
 using Trial.MvcDemoApplication.PDM;
+using Trial.MvcDemoApplication.PDM.Dtos;
 
 namespace Trial.MvcDemoApplication.Web.Pages.Structures;
 
-public class IndexModel : PageModel
+public class IndexModel : MvcDemoApplicationPageModel
 {
-    public void OnGet()
+    [BindProperty]
+    public StructureHierarchyDto? Structure { get; set; }
+    private readonly IStructureAppService _structureAppService;
+
+    public IndexModel(IStructureAppService structureAppService)
     {
+        _structureAppService = structureAppService;
+    }
+
+    public async Task OnGetAsync()
+    {
+        var s = await _structureAppService.GetListAsync(new StructureDto());
+        Structure = await _structureAppService.GetAsync(s.Items[0].Id);
     }
     public static string ConvertToHtmlTree(StructureHierarchyDto data)
     {
@@ -50,5 +62,4 @@ public class IndexModel : PageModel
 
         return htmlBuilder.ToString();
     }
-
 }

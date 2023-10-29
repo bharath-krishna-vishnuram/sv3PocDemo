@@ -59,12 +59,13 @@ public class MvcDemoApplicationMenuContributor : IMenuContributor
         var PdmMenu = new ApplicationMenuItem(
                 "PdmStore",
                 l["Menu:PdmStore"],
-                icon: "fa fa-Structure"
+                icon: "fa fa-database"
             );
         PdmMenu.AddItem(
                 new ApplicationMenuItem(
                     "PdmStore.Structures",
                     l["Menu:Structures"],
+                    icon: "fa fa-building",
                     url: "/PDM/Structures"
                 )
             );
@@ -72,19 +73,22 @@ public class MvcDemoApplicationMenuContributor : IMenuContributor
                 new ApplicationMenuItem(
                     "PdmStore.Components",
                     l["Menu:Components"],
+                    icon: "fa fa-cog",
                     url: "/PDM/Components"
-                ));
-        PdmMenu.AddItem(
-                new ApplicationMenuItem(
-                    "PdmStore.TextManager",
-                    l["Menu:TextManager"],
-                    url: "/PDM/TextManager"
                 ));
         PdmMenu.AddItem(
                 new ApplicationMenuItem(
                     "PdmStore.Options",
                     l["Menu:Options"],
+                    icon: "fa fa-tag",
                     url: "/PDM/Options"
+                ));
+        PdmMenu.AddItem(
+                new ApplicationMenuItem(
+                    "PdmStore.TextManager",
+                    l["Menu:TextManager"],
+                    icon: "fa fa-font",
+                    url: "/PDM/TextManager"
                 ));
         context.Menu.AddItem(PdmMenu);
 

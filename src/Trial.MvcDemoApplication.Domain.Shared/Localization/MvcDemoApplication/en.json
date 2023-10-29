@@ -9,7 +9,7 @@
     "Menu:Components": "Components",
     "Menu:Discriptors": "Discriptors",
     "Menu:Options": "Options",
-    "Menu:TextManager": "TextManager",
+    "Menu:TextManager": "Text Manager",
 
     //PageHeaders
     "PageHeaders:Structures": "Structures",
@@ -29,6 +29,11 @@
     "ColumnHeaders:CreationTime": "Creation Time",
     "ColumnHeaders:LastUpdateTime": "Update Time",
 
+    "DeletionConfirmationMessage:Text": "Are you sure to delete the Text '{0}'?",
+
+    "Button:NewText": "Add New Text",
+
+    "SuccessfullyDeleted": "Successfully deleted!",
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project designed to showcase the capabilities of modern web development. Explore how this application can transform your business operations and help you reach a global audience.",
     "WelcomeMessage": "Congratulations,",

@@ -1,0 +1,32 @@
+﻿@page
+@model Trial.MvcDemoApplication.Web.Pages.TextManager.IndexModel
+
+@using Trial.MvcDemoApplication.Web.Pages.TextManager
+@using Trial.MvcDemoApplication.Localization
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+
+@section scripts
+{
+    <abp-script src="/Pages/PDM/TextManager/Index.js" />
+}
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>@L["PageHeaders:TextManager"]</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-end">
+                <abp-button id="NewTextButton"
+                            text="@L["Button:NewText"].Value"
+                            icon="plus"
+                            button-type="Primary" />
+            </abp-column>
+        </abp-row>
+
+    </abp-card-header>
+    <abp-card-body>
+        <abp-table striped-rows="true" id="TextsTable"></abp-table>
+    </abp-card-body>
+</abp-card>

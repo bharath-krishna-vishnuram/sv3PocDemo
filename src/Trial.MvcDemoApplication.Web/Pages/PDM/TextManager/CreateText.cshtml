@@ -1,0 +1,19 @@
+﻿@page
+@model Trial.MvcDemoApplication.Web.Pages.PDM.TextManager.CreateTextModel
+@using Trial.MvcDemoApplication.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Trial.MvcDemoApplication.Web.Pages.PDM.TextManager
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="Text" asp-page="/PDM/TextManager/CreateText">
+    <abp-modal>
+        <abp-modal-header title="@L["NewTextElement"].Value"></abp-modal-header>
+        <abp-modal-body>
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

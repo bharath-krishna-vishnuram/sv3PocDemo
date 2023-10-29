@@ -1,0 +1,20 @@
+﻿@page
+@model Trial.MvcDemoApplication.Web.Pages.PDM.TextManager.UpdateTextModel
+@using Trial.MvcDemoApplication.Localization
+@using Trial.MvcDemoApplication.Web.Pages.PDM.TextManager
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="Text" asp-page="/PDM/TextManager/UpdateText">
+    <abp-modal>
+        <abp-modal-header title="@L["Update"].Value"></abp-modal-header>
+        <abp-modal-body>
+            <abp-input asp-for="Id" />
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

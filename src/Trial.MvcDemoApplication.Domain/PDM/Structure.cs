@@ -18,22 +18,19 @@ public class Structure : FullAuditedEntity<Guid>
     public Component RootComponent { get; protected set; } = null!;
 
     public List<StructureElement> StructureElements { get; protected set; } = new();
-    public Structure(TextElement name, StructureType type) : base()
+    protected Structure(TextElement name, StructureType type) : base()
     {
         Id = Guid.NewGuid();
         Name = name;
         Type = type;
         RootComponent = Component.AddRootComponent(name, this);
-        //StructureElements = StructureElement.AddRootElement(RootComponent);//new List<StructureElement>() { new StructureElement(RootComponent) };
     }
 
-    internal static Structure AddSampleStructure(Component assembly)
+    public static Structure CreateStructure(TextElement name, string description, StructureType type)
     {
-        return new Structure()
+        return new Structure(name, type)
         {
-            Name = assembly.Name,
-            Type = StructureType.SubAssembly,
-            RootComponent = assembly,
+            Description = description,
         };
     }
     public static Structure GetSampleData(Dictionary<string, TextElement> allElementTexts)
@@ -152,12 +149,5 @@ public class StructureElement : Volo.Abp.Domain.Entities.Entity<Guid>
     {
         return new() { new StructureElement(assembly) };
     }
-}
-public enum StructureType
-{
-    SubAssembly,
-    Interface,
-    Cluster,
-    Diagrams
 }
 

@@ -13,6 +13,7 @@
 
     //PageHeaders
     "PageHeaders:Structures": "Structures",
+    "PageHeaders:StructureHierarchy": "Structure Hierarchy",
     "PageHeaders:Components": "Components",
     "PageHeaders:Discriptors": "Discriptors",
     "PageHeaders:Options": "Options",
@@ -32,6 +33,17 @@
     "DeletionConfirmationMessage:Text": "Are you sure to delete the Text '{0}'?",
 
     "Button:NewText": "Add New Text",
+    "Button:NewStructure": "Add New Structure",
+    "Button:NewComponent": "Add Component",
+    "Button:SubComponent": "Add Sub Component",
+    "Button:NewDescriptor": "Add Descriptor",
+    "Button:NewOption": "Add Option",
+    "Button:Back": "Back",
+
+    "Enum:StructureType.0": "Sub Assembly",
+    "Enum:StructureType.1": "Interface",
+    "Enum:StructureType.2": "Cluster",
+    "Enum:StructureType.3": "Diagrams",
 
     "SuccessfullyDeleted": "Successfully deleted!",
     "Welcome": "Welcome",

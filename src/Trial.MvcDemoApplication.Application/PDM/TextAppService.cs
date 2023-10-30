@@ -14,12 +14,15 @@ public class TextAppService : CrudAppService<TextElement, TextElementDto, Guid, 
     }
     protected override IQueryable<TextElement> ApplyPaging(IQueryable<TextElement> query, TextElementListRequestDto input)
     {
-        if (!input.Filter.IsNullOrEmpty())
-        {
-            query = query
-                .Where(rec => rec.UniqueTextId.Contains(input.Filter!)
-                        || rec.TextName.Contains(input.Filter!));
-        }
+        query = query
+            .WhereIf(input.IsProduct, rec => rec.IsProduct)
+            .WhereIf(input.IsSubProduct, rec => rec.IsSubProduct)
+            .WhereIf(input.IsStructure, rec => rec.IsStructure)
+            .WhereIf(input.IsComponent, rec => rec.IsComponent)
+            .WhereIf(input.IsDescriptor, rec => rec.IsDescriptor)
+            .WhereIf(input.IsOption, rec => rec.IsOption)
+            .WhereIf(!input.Filter.IsNullOrEmpty(), rec => rec.UniqueTextId.Contains(input.Filter!)
+                    || rec.TextName.Contains(input.Filter!));
         return base.ApplyPaging(query, input);
     }
 }

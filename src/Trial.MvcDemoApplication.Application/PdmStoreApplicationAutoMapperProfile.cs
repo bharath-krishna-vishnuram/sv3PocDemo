@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using Trial.MvcDemoApplication.Common.Dto;
 using Trial.MvcDemoApplication.PDM;
-using Trial.MvcDemoApplication.PDM.Dtos;
+using Trial.MvcDemoApplication.PDM.Dtos.Structure;
 
 namespace Trial.MvcDemoApplication;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Trial.MvcDemoApplication.Common.Dto;
 
-namespace Trial.MvcDemoApplication.PDM.Dtos;
+namespace Trial.MvcDemoApplication.PDM.Dtos.Structure;
 
 public class ComponentHierarchyDto : IdNameDto<Guid>
 {

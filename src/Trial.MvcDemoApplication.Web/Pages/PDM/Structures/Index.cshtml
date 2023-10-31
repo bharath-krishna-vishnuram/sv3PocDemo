@@ -1,18 +1,37 @@
 ﻿@page
 @using Trial.MvcDemoApplication.Web.Pages.Structures
+@inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
+
 @model IndexModel
 @{
+    PageLayout.Content.Title = "";
 }
-<h2>Structures</h2>
-<div class="root-component">
-    @Html.Raw(IndexModel.ConvertToHtmlTree(Model.Structure!))
-</div>
-<link href="https://unpkg.com/treeflex/dist/css/treeflex.css" rel="stylesheet">
+@using Trial.MvcDemoApplication.Localization
+@using Microsoft.Extensions.Localization
 
-<style>
-    .component {
-        border: 1px solid black;
-        padding: 10px;
-        margin: 10px;
-    }
-</style>
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+
+@section scripts
+{
+    <abp-script src="/Pages/PDM/Structures/Index.js" />
+}
+
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>@L["PageHeaders:Structures"]</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-end">
+                <abp-button id="NewStructureButton"
+                            text="@L["Button:NewStructure"].Value"
+                            icon="plus"
+                            button-type="Primary" />
+            </abp-column>
+        </abp-row>
+
+    </abp-card-header>
+    <abp-card-body>
+        <abp-table striped-rows="true" id="StructuresTable"></abp-table>
+    </abp-card-body>
+</abp-card>

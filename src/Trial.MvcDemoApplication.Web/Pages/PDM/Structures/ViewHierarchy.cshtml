@@ -1,0 +1,62 @@
+﻿@page
+@using Trial.MvcDemoApplication.Web.Pages.PDM.Structures
+@model Trial.MvcDemoApplication.Web.Pages.PDM.Structures.ViewHierarchyModel
+@{
+    PageLayout.Content.Title = L["PageHeaders:StructureHierarchy"];
+    PageLayout.Content.BreadCrumb.Add(L["PageHeaders:Structures"], "/PDM/Structures");
+}
+@using Trial.MvcDemoApplication.Localization
+@using Microsoft.Extensions.Localization
+@inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
+
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+@section scripts
+{
+    <script>
+        $(".abp-view-modal form").abpAjaxForm().on('abp-ajax-success', function () {
+            location.href = "/Structures";
+        });
+    </script>
+    <abp-script src="/Pages/PDM/Structures/Index.js" />
+}
+<link href="https://unpkg.com/treeflex/dist/css/treeflex.css" rel="stylesheet">
+@section styles {
+        .component {
+            border: 1px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+    <style>
+        .abp-view-modal .modal {
+            position: static;
+            display: block;
+            opacity: inherit !important;
+        }
+
+            .abp-view-modal .modal.fade .modal-dialog {
+                transition: inherit !important;
+                transform: inherit !important;
+                ;
+            }
+
+        .abp-view-modal .modal-header .btn-close {
+            display: none;
+        }
+    </style>
+}
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>@L["PageHeaders:StructureHierarchy"]</abp-card-title>
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+</abp-card>
+
+<div class="abp-view-modal">
+    <div id="HierarchyTable" class="root-component">
+        @Html.Raw(ViewHierarchyModel.ConvertToHtmlTree(Model.Structure))
+    </div>
+</div>
+

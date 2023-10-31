@@ -123,7 +123,10 @@ public class Structure : FullAuditedEntity<Guid>
         return assembly;
     }
 
-
+    public void UpdateName(TextElement newStructureName)
+    {
+        Name = newStructureName;
+    }
 }
 
 public class StructureElement : Volo.Abp.Domain.Entities.Entity<Guid>

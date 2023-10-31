@@ -27,6 +27,12 @@ public class StructureAppService : CrudAppService<Structure, StructureDto, Struc
         var structure = await GetStructureWithHierarchyDetailsAsync(structureId);
         return ObjectMapper.Map<Structure, StructureHierarchyDto>(structure);
     }
+    protected override async Task MapToEntityAsync(CreateStructureDto updateInput, Structure entity)
+    {
+        var newStructureName = await _textElementRepository.GetAsync(updateInput.NameId)!;
+        base.MapToEntity(updateInput, entity);
+        entity.UpdateName(newStructureName);
+    }
     protected override async Task<Structure> MapToEntityAsync(CreateStructureDto createInput)
     {
         var structureName = await _textElementRepository.GetAsync(createInput.NameId)!;

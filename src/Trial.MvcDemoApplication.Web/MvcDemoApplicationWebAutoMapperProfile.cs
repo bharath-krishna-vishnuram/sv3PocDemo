@@ -17,9 +17,9 @@ public class MvcDemoApplicationWebAutoMapperProfile : Profile
 
         CreateMap<StructureDto, CreateStructureDto> ();
         CreateMap<CreateStructureDto, Structure> ();
-        CreateMap<CreateStructureModal, Structure> ();
-        CreateMap<CreateStructureModal, CreateStructureDto> ();
-        CreateMap<StructureDto, CreateStructureModal>();
+        CreateMap<CreateUpdateStructureModal, Structure> ();
+        CreateMap<CreateUpdateStructureModal, CreateStructureDto> ();
+        CreateMap<StructureDto, CreateUpdateStructureModal>();
 
     }
 }

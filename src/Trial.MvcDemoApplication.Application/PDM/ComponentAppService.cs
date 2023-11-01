@@ -10,7 +10,8 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Trial.MvcDemoApplication.PDM;
 
-public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto, ComponentDto, Guid, ComponentDto, ComponentDto, ComponentDto>
+public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto, ComponentDto, Guid, ComponentDto, ComponentDto, ComponentDto>,
+    IComponentAppService
 {
     public ComponentAppService(IRepository<Component, Guid> repository) : base(repository) { }
     protected override async Task<Component> GetEntityByIdAsync(Guid id)
@@ -18,6 +19,10 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         var query = await Repository.WithDetailsAsync(rec => rec.Descriptors, rec => rec.SubComponents);
         return await AsyncExecuter.FirstAsync(query.Where(rec => rec.Id == id));
     }
+}
+
+public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, ComponentDto, Guid, ComponentDto, ComponentDto, ComponentDto>
+{
 }
 
 [AutoMap(typeof(Component))]

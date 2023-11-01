@@ -4,6 +4,7 @@
 @{
     PageLayout.Content.Title = L["PageHeaders:StructureHierarchy"];
     PageLayout.Content.BreadCrumb.Add(L["PageHeaders:Structures"], "/PDM/Structures");
+    ViewData["isRootLevel"] = true;
 }
 @using Trial.MvcDemoApplication.Localization
 @using Microsoft.Extensions.Localization
@@ -36,7 +37,6 @@
             .abp-view-modal .modal.fade .modal-dialog {
                 transition: inherit !important;
                 transform: inherit !important;
-                ;
             }
 
         .abp-view-modal .modal-header .btn-close {
@@ -50,12 +50,24 @@
             <abp-column size-md="_6">
                 <abp-card-title>@L["PageHeaders:StructureHierarchy"]</abp-card-title>
             </abp-column>
+            <abp-column size-md="_6" class="text-end">
+                <abp-button id="previewHierarchy"
+                            text="@L["Show  Preview"].Value"
+                            icon="eye"
+                            button-type="Primary" />
+            </abp-column>
+        </abp-row>
+        <abp-row>
+            @if (@Model.Structure != null)
+            {
+                <partial name="ComponentPartial" model="@Model.Structure.RootComponent" />
+            }
         </abp-row>
     </abp-card-header>
 </abp-card>
 
 <div class="abp-view-modal">
-    <div id="HierarchyTable" class="root-component">
+    <div id="HierarchyTable" class="root-component" style="display:none;">
         @Html.Raw(ViewHierarchyModel.ConvertToHtmlTree(Model.Structure))
     </div>
 </div>

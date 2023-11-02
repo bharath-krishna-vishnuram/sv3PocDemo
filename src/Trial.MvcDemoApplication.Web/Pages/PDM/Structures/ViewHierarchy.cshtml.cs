@@ -12,7 +12,7 @@ public class ViewHierarchyModel : MvcDemoApplicationPageModel
 {
     [HiddenInput]
     [BindProperty(SupportsGet = true)]
-    public Guid? Id { get; set; }
+    public Guid Id { get; set; }
 
     [BindProperty]
     public StructureHierarchyDto? Structure { get; set; }
@@ -25,8 +25,7 @@ public class ViewHierarchyModel : MvcDemoApplicationPageModel
 
     public async Task OnGetAsync()
     {
-        if (Id.HasValue)
-            Structure = await _structureAppService.GetStructureHierarchyAsync(Id.Value);
+        Structure = await _structureAppService.GetStructureHierarchyAsync(Id);
     }
     public static string ConvertToHtmlTree(StructureHierarchyDto? data)
     {

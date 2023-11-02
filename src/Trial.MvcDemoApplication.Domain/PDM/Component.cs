@@ -34,10 +34,10 @@ public class Component : FullAuditedEntity<Guid>
         return descriptor;
     }
 
-    internal Component AddSubComponent(TextElement subComponentName)
+    public Component AddSubComponent(TextElement subComponentName)
     {
         if (SubComponents.Any(c => c.Name.TextName == subComponentName.TextName))
-            throw new Exception($"Subcomponent {subComponentName} already part of component {Name}");
+            throw new Volo.Abp.BusinessException($"Subcomponent {subComponentName} already part of component {Name}");
         Component subComponent = new(subComponentName)
         {
             AssociatedStructureElement = new StructureElement(AssociatedStructureElement.AssociatedStructure)

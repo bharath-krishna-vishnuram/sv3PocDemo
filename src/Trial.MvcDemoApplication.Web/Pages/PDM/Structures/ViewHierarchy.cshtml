@@ -5,6 +5,7 @@
     PageLayout.Content.Title = L["PageHeaders:StructureHierarchy"];
     PageLayout.Content.BreadCrumb.Add(L["PageHeaders:Structures"], "/PDM/Structures");
     ViewData["isRootLevel"] = true;
+    ViewData["structureId"] = @Model.Id;
 }
 @using Trial.MvcDemoApplication.Localization
 @using Microsoft.Extensions.Localization

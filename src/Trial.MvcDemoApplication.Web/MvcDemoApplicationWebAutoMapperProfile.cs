@@ -2,8 +2,8 @@
 using PDM.Models;
 using Trial.MvcDemoApplication.PDM;
 using Trial.MvcDemoApplication.PDM.Dtos.Structure;
+using Trial.MvcDemoApplication.Web.Pages.PDM.Components;
 using Trial.MvcDemoApplication.Web.Pages.PDM.Structures;
-using static Trial.MvcDemoApplication.Web.Pages.PDM.Structures.CreateModalModel;
 
 namespace Trial.MvcDemoApplication.Web;
 
@@ -21,5 +21,6 @@ public class MvcDemoApplicationWebAutoMapperProfile : Profile
         CreateMap<CreateUpdateStructureModal, CreateStructureDto> ();
         CreateMap<StructureDto, CreateUpdateStructureModal>();
 
+        CreateMap< CreateUpdateComponentModal, CreateUpdateComponentDto> ();
     }
 }

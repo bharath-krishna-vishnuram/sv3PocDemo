@@ -1,5 +1,8 @@
 ﻿@model Trial.MvcDemoApplication.PDM.Dtos.Structure.ComponentHierarchyDto
 @{
+    Guid structureId = ViewData.ContainsKey("structureId") ? (Guid)ViewData["structureId"]!
+            //Guid.TryParse(, out var sId)? sId 
+            : Guid.Empty;
     bool isRootLevel = ViewData.ContainsKey("isRootLevel") && Convert.ToBoolean(ViewData["isRootLevel"]);
     bool isLastSubComponent = ViewData.ContainsKey("isLastSubComponent") && Convert.ToBoolean(ViewData["isLastSubComponent"]);
     bool isFirstSubComponent = ViewData.ContainsKey("isFirstSubComponent") && Convert.ToBoolean(ViewData["isFirstSubComponent"]);
@@ -98,15 +101,27 @@
     }
 </li>
 <script>
-    function handleAdd(id) {
-        trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });
+    function handleAdd(componentId) {
+        var createModal = new abp.ModalManager(abp.appPath + 'PDM/Components/CreateModal');
+        createModal.open({ parentComponentId: componentId })
+                .then(function () {
+                    abp.notify.info('Added Sub-component Successfully!');
+                });
+        @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
         // logic for handling add operation
-        alert('Add clicked for ID: ' + id);
+        createModal.onResult(function () {
+            location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+        });
     }
+
 
     function handleRemove(id) {
         // logic for handling remove operation
-        alert('Remove clicked for ID: ' + id);
+        trial.mvcDemoApplication.pDM.component.delete(id)
+        .then(function(data) {
+                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+                abp.notify.info('Successfully deleted!');
+            })
     }
 
     function handleMoveUp(id) {

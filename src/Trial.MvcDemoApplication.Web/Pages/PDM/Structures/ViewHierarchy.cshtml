@@ -31,6 +31,7 @@
                 <abp-button id="previewHierarchy"
                             text="@L["Toggle Hierarchy View"].Value"
                             icon="eye"
+                            onclick="populateStructureHierarchy('@Model.Id')"
                             abp-collapse-id="HierarchyView"
                             button-type="Success"
                             />
@@ -41,13 +42,57 @@
         @if (@Model.Structure != null)
         {
             <abp-accordion>
-                <abp-list-group flush="true">
+                <abp-list-group id="StructureView" flush="true">
                     <partial name="ComponentPartial" model="@Model.Structure.RootComponent" />
                 </abp-list-group>
             </abp-accordion>
         }
     </abp-card-body>
 </abp-card>
+
 <abp-collapse-body id="HierarchyView">
         @Html.Raw(ViewHierarchyModel.ConvertToHtmlTree(Model.Structure))
 </abp-collapse-body>
+
+<script>
+    // Function to convert data to HTML tree structure
+    function convertToHtmlTree(data) {
+        if (!data) return '<div/>';
+        function buildTree(node) {
+            if (!node) {
+                return '';
+            }
+            let html = '';
+            if (node.subComponents && node.subComponents.length > 0) {
+                html += `<li><span class='tf-nc'>${node.name}</span><ul>`;
+                node.subComponents.forEach(subComponent => {
+                    html += buildTree(subComponent);
+                });
+                html += '</ul></li>';
+            } else {
+                html += `<li><span class='tf-nc'>${node.name}</span></li>`;
+            }
+            return html;
+        }
+
+        let htmlTree = "<div class='tf-tree example'><ul>";
+        htmlTree += buildTree(data.rootComponent);
+        htmlTree += '</ul></div>';
+        console.log(htmlTree)
+        return htmlTree.replace(/<ul><\/ul>/g, '');
+    }
+
+     //Event listener for the button click
+
+    //document.getElementById('previewHierarchy').addEventListener('click', function ()
+    function populateStructureHierarchy(structureId) {
+        // Call convertToHtmlTree with your data
+        trial.mvcDemoApplication.pDM.structure.getStructureHierarchy(structureId)
+            .then(structureData => {
+                const htmlTree = convertToHtmlTree(structureData);
+                // Populate the HierarchyView element with the HTML tree
+                document.getElementById('HierarchyView').innerHTML = htmlTree;
+            });
+    }
+</script>
+

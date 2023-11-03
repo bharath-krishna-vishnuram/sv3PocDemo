@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace PDM.Models;
@@ -55,6 +56,27 @@ public class Component : FullAuditedEntity<Guid>
         {
             AssociatedStructureElement = new StructureElement(structure)
         };
+    }
+
+    public static void IncreaseComponentOrder(List<Component> subComponents, KeyValuePair<Guid?, int> componentDetails)
+    {
+        subComponents.RemoveAll(rec => rec.AssociatedStructureElement.ElementOrder < componentDetails.Value);
+        var nextSubComponent = subComponents.Where(rec => rec.AssociatedStructureElement.ElementOrder != componentDetails.Value)
+                                               .MinBy(rec => rec.AssociatedStructureElement.ElementOrder) ??
+                                            throw new UserFriendlyException("Cannot Move last component");
+        var requestSubComponent = subComponents.MinBy(rec => rec.AssociatedStructureElement.ElementOrder)!;
+        requestSubComponent.AssociatedStructureElement.ElementOrder = nextSubComponent.AssociatedStructureElement.ElementOrder;
+        nextSubComponent.AssociatedStructureElement.ElementOrder = componentDetails.Value;
+    }
+    public static void DecreaseComponentOrder(List<Component> subComponents, KeyValuePair<Guid?, int> componentDetails)
+    {
+        subComponents.RemoveAll(rec => rec.AssociatedStructureElement.ElementOrder > componentDetails.Value);
+        var nextSubComponent = subComponents.Where(rec => rec.AssociatedStructureElement.ElementOrder != componentDetails.Value)
+                                               .MaxBy(rec => rec.AssociatedStructureElement.ElementOrder) ??
+                                            throw new UserFriendlyException("Cannot Move first component");
+        var requestSubComponent = subComponents.MaxBy(rec => rec.AssociatedStructureElement.ElementOrder)!;
+        requestSubComponent.AssociatedStructureElement.ElementOrder = nextSubComponent.AssociatedStructureElement.ElementOrder;
+        nextSubComponent.AssociatedStructureElement.ElementOrder = componentDetails.Value;
     }
 
     //public List<ComponentDescriptorConstraint> DescriptorConstraints { get; set; } = new();

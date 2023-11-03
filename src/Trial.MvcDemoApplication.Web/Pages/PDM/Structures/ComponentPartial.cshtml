@@ -109,33 +109,41 @@
     function handleAdd(componentId) {
         var createModal = new abp.ModalManager(abp.appPath + 'PDM/Components/CreateModal');
         createModal.open({ parentComponentId: componentId })
-                .then(function () {
-                    abp.notify.info('Added Sub-component Successfully!');
-                });
-        @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
-        // logic for handling add operation
-        createModal.onResult(function () {
+            createModal.onResult(function () {
+                abp.notify.info('Added Sub-component Successfully!');
                 location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
-        });
+            });
     }
-
 
     function handleRemove(id) {
         // logic for handling remove operation
         trial.mvcDemoApplication.pDM.component.delete(id)
-        .then(function(data) {
-                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+            .then(function (data) {
                 abp.notify.info('Successfully deleted!');
+                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
             })
     }
 
-    function handleMoveUp(id) {
-        // logic for moving up
-        alert('Move up clicked for ID: ' + id);
+    function handleMoveUp(componentId) {
+        trial.mvcDemoApplication.pDM.component.decreaseOrder(componentId)
+            .then(function (data) {
+                abp.notify.info('Moved component sucessfully!');
+                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+            })
     }
 
-    function handleMoveDown(id) {
-        // logic for moving down
-        alert('Move down clicked for ID: ' + id);
+
+    function handleMoveDown(componentId) {
+        trial.mvcDemoApplication.pDM.component.increaseOrder(componentId)
+            .then(function (data) {
+                abp.notify.info('Moved component sucessfully!');
+                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+            })
+    }
+    function handleView(id) {
+        // logic for View Component Details
+        @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
+        alert('View Component Details for ID: ' + id);
     }
 </script>
+

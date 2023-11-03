@@ -23,6 +23,36 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         _textElementRepository = textElementRepository;
     }
 
+
+    public async Task IncreaseOrderAsync(Guid ComponentId)
+    {
+        var(subComponents, componentDetails) = await GetAllSiblingComponentsAsync(ComponentId);
+        Component.IncreaseComponentOrder(subComponents, componentDetails);
+    }
+
+    public async Task DecreaseOrderAsync(Guid ComponentId)
+    {
+        var (subComponents, componentDetails) = await GetAllSiblingComponentsAsync(ComponentId);
+        Component.DecreaseComponentOrder(subComponents, componentDetails);
+    }
+
+    private async Task<(List<Component> subComponents, KeyValuePair<Guid?, int> componentDetails)> GetAllSiblingComponentsAsync(Guid componentId)
+    {
+        var query = await Repository.GetQueryableAsync();
+        var componentDetails = await AsyncExecuter
+            .FirstOrDefaultAsync(query.Where(rec => rec.Id == componentId).Select(rec =>
+            new KeyValuePair<Guid?, int>(rec.ParentComponentId, rec.AssociatedStructureElement.ElementOrder)));
+
+        if (componentDetails.Key == null)
+        {
+            throw new UserFriendlyException("Cannot Move root components");
+        }
+        var subComponentsQuery = await Repository.WithDetailsAsync(rec => rec.AssociatedStructureElement);
+        var subComponents = await AsyncExecuter.ToListAsync(subComponentsQuery.Where(rec =>
+            rec.ParentComponentId == componentDetails.Key));
+        return (subComponents, componentDetails);
+    }
+
     protected async override Task<Component> MapToEntityAsync(CreateUpdateComponentDto createInput)
     {
         var query = await Repository.WithDetailsAsync(rec => rec.SubComponents, 
@@ -37,13 +67,15 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
 
     protected override async Task<Component> GetEntityByIdAsync(Guid id)
     {
-        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors, rec => rec.SubComponents);
+        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors);
         return await AsyncExecuter.FirstAsync(query.Where(rec => rec.Id == id));
     }
 }
 
 public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, ComponentDto, Guid, ComponentDto, CreateUpdateComponentDto, CreateUpdateComponentDto>
 {
+    Task IncreaseOrderAsync(Guid ComponentId);
+    Task DecreaseOrderAsync(Guid ComponentId);
 }
 
 [AutoMap(typeof(Component))]

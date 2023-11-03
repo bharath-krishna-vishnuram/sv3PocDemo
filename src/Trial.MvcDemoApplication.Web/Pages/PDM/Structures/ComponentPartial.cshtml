@@ -1,11 +1,12 @@
 ﻿@model Trial.MvcDemoApplication.PDM.Dtos.Structure.ComponentHierarchyDto
 @{
     Guid structureId = ViewData.ContainsKey("structureId") ? (Guid)ViewData["structureId"]!
-            //Guid.TryParse(, out var sId)? sId 
             : Guid.Empty;
     bool isRootLevel = ViewData.ContainsKey("isRootLevel") && Convert.ToBoolean(ViewData["isRootLevel"]);
     bool isLastSubComponent = ViewData.ContainsKey("isLastSubComponent") && Convert.ToBoolean(ViewData["isLastSubComponent"]);
     bool isFirstSubComponent = ViewData.ContainsKey("isFirstSubComponent") && Convert.ToBoolean(ViewData["isFirstSubComponent"]);
+    var componentName = @Model.Name.Replace(" ", string.Empty);
+    var subComponents = "SubComponentOf_" + componentName;
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
 @section scripts
@@ -22,17 +23,6 @@
     }
 
     /* General button styles */
-    .btn-icon {
-        background-color: #f8f8f8; /* Light grey background */
-        border: 1px solid #ccc; /* Border color */
-        border-radius: 4px; /* Rounded corners */
-        padding: 2px 6px; /* Decreased padding for smaller button size */
-        margin-left: 10px; /* Space between the text and the button */
-        cursor: pointer; /* Change cursor on hover */
-        transition: background 0.3s; /* Smooth transition effect */
-        font-size: 12px; /* Decreased font size for icons to further reduce button size */
-        vertical-align: middle; /* To align the button vertically with the text */
-    }
 
     .btn-icon:hover {
         background-color: #d0d0d0; /* Darker grey on hover */
@@ -55,51 +45,66 @@
         font-size: 12px; /* Size of the icon */
     }
 
-</style>
-<li>
-    <span class="component-name">@Model.Name</span>
-    <!-- Add Button -->
-    <button class="btn-icon add-btn" onclick="handleAdd('@Model.Id')" title="Add Sub Component">
-        <i class="fas fa-plus"></i>
-    </button>
+    /* Icons within the buttons */
+    .structure-group {
+        font-size: 15px; /* Size of the icon */
+    }
 
-    <!-- Remove Button -->
-    <button class="btn-icon remove-btn" onclick="handleRemove('@Model.Id')" title="Remove Component and its Sub-Components">
-        <i class="fas fa-times"></i>
-    </button>
-    @if (!isRootLevel)
-    {
-        @if(!isFirstSubComponent)
-        {
-            <!-- Up Arrow Button -->
-            <button class="btn-icon up-btn" onclick="handleMoveUp('@Model.Id')" title="Move Sub Component Up">
-                <i class="fas fa-arrow-up"></i>
+</style>
+<abp-list-group-item class="structure-group">
+    <div class="accordion" id="@componentName">
+        <div class="card-header" id="headingOne">
+            <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#@subComponents" aria-expanded="true" aria-controls="collapseOne">
+                @Model.Name
             </button>
-        }
-        @if (!isLastSubComponent)
+            <abp-button-group size="Small" background="Dark">
+                <!-- Add Button -->
+                <abp-button class="btn-icon add-btn" onclick="handleAdd('@Model.Id')" icon="plus" title="Add Sub Component"/>
+                <!-- Remove Button -->
+                <abp-button class="btn-icon remove-btn" onclick="handleRemove('@Model.Id')" icon="times" 
+                    title="Remove Component and its Sub-Components"/>
+                @if (!isRootLevel)
+                {
+                    @if (!isFirstSubComponent)
+                    {
+                        <!-- Up Arrow Button -->
+                        <abp-button class="btn-icon up-btn" onclick="handleMoveUp('@Model.Id')" icon="arrow-up" 
+                            title="Move Sub Component Up"/>
+                    }
+                    @if (!isLastSubComponent)
+                    {
+                        <!-- Down Arrow Button -->
+                        <abp-button class="btn-icon down-btn" onclick="handleMoveDown('@Model.Id')" icon="arrow-down" 
+                            title="Move Sub Component Down"/>
+                    }
+                    <!-- View Button -->
+                    <abp-button class="btn-icon" onclick="handleView('@Model.Id')" icon="eye"
+                                title="View Component Details"/>
+                }
+            </abp-button-group>
+        </div>
+    </div>
+
+    <div id="@subComponents" class="collapse hide" aria-labelledby="headingOne" data-bs-parent="#@componentName">
+        @if (Model.SubComponents?.Any() == true)
         {
-            <!-- Down Arrow Button -->
-            <button class="btn-icon down-btn" onclick="handleMoveDown('@Model.Id')" title="Move Sub Component Down">
-                <i class="fas fa-arrow-down"></i>
-            </button>
+            int i = 0;
+            ViewData["isRootLevel"] = false;
+            ViewData["isFirstSubComponent"] = true;
+            <abp-accordion>
+                <abp-list-group flush="true">
+                    @foreach (var subComponent in Model.SubComponents)
+                    {
+                        ViewData["isLastSubComponent"] = i + 1 == Model.SubComponents.Count;
+                        <partial name="ComponentPartial" model="@subComponent" />
+                        i++;
+                        ViewData["isFirstSubComponent"] = false;
+                    }
+                </abp-list-group>
+            </abp-accordion>
         }
-    }
-    @if (Model.SubComponents?.Any() == true)
-    {
-        int i = 0;
-        ViewData["isRootLevel"] = false;
-        ViewData["isFirstSubComponent"] = true;
-        <ul>
-            @foreach (var subComponent in Model.SubComponents)
-            {
-                ViewData["isLastSubComponent"] = i + 1 == Model.SubComponents.Count;
-                <partial name="ComponentPartial" model="@subComponent" />
-                i++;
-                ViewData["isFirstSubComponent"] = false;
-            }
-        </ul>
-    }
-</li>
+    </div>
+</abp-list-group-item>
 <script>
     function handleAdd(componentId) {
         var createModal = new abp.ModalManager(abp.appPath + 'PDM/Components/CreateModal');
@@ -110,7 +115,7 @@
         @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
         // logic for handling add operation
         createModal.onResult(function () {
-            location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
         });
     }
 

@@ -1,75 +1,50 @@
 ﻿@page
 @using Trial.MvcDemoApplication.Web.Pages.PDM.Structures
 @model Trial.MvcDemoApplication.Web.Pages.PDM.Structures.ViewHierarchyModel
+@using Trial.MvcDemoApplication.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal;
+@inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
 @{
     PageLayout.Content.Title = L["PageHeaders:StructureHierarchy"];
     PageLayout.Content.BreadCrumb.Add(L["PageHeaders:Structures"], "/PDM/Structures");
     ViewData["isRootLevel"] = true;
     ViewData["structureId"] = @Model.Id;
 }
-@using Trial.MvcDemoApplication.Localization
-@using Microsoft.Extensions.Localization
-@inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
 
 @inject IStringLocalizer<MvcDemoApplicationResource> L
 @section scripts
 {
-    <script>
-        $(".abp-view-modal form").abpAjaxForm().on('abp-ajax-success', function () {
-            location.href = "/Structures";
-        });
-    </script>
     <abp-script src="/Pages/PDM/Structures/Index.js" />
 }
 <link href="https://unpkg.com/treeflex/dist/css/treeflex.css" rel="stylesheet">
-@section styles {
-        .component {
-            border: 1px solid black;
-            padding: 10px;
-            margin: 10px;
-        }
-    <style>
-        .abp-view-modal .modal {
-            position: static;
-            display: block;
-            opacity: inherit !important;
-        }
-
-            .abp-view-modal .modal.fade .modal-dialog {
-                transition: inherit !important;
-                transform: inherit !important;
-            }
-
-        .abp-view-modal .modal-header .btn-close {
-            display: none;
-        }
-    </style>
-}
-<abp-card>
+<abp-card background="Light" text-color="Dark" border="Success" class="mb-3">
     <abp-card-header>
         <abp-row>
             <abp-column size-md="_6">
-                <abp-card-title>@L["PageHeaders:StructureHierarchy"]</abp-card-title>
+                @L["PageHeaders:StructureHierarchy"]
             </abp-column>
             <abp-column size-md="_6" class="text-end">
                 <abp-button id="previewHierarchy"
-                            text="@L["Show  Preview"].Value"
+                            text="@L["Toggle Hierarchy View"].Value"
                             icon="eye"
-                            button-type="Primary" />
+                            abp-collapse-id="HierarchyView"
+                            button-type="Success"
+                            />
             </abp-column>
         </abp-row>
-        <abp-row>
-            @if (@Model.Structure != null)
-            {
-                <partial name="ComponentPartial" model="@Model.Structure.RootComponent" />
-            }
-        </abp-row>
     </abp-card-header>
+    <abp-card-body background="Light" text-color="Dark" border="Success" size-md="_1">
+        @if (@Model.Structure != null)
+        {
+            <abp-accordion>
+                <abp-list-group flush="true">
+                    <partial name="ComponentPartial" model="@Model.Structure.RootComponent" />
+                </abp-list-group>
+            </abp-accordion>
+        }
+    </abp-card-body>
 </abp-card>
-
-<div class="abp-view-modal">
-    <div id="HierarchyTable" class="root-component" style="display:none;">
+<abp-collapse-body id="HierarchyView">
         @Html.Raw(ViewHierarchyModel.ConvertToHtmlTree(Model.Structure))
-    </div>
-</div>
-
+</abp-collapse-body>

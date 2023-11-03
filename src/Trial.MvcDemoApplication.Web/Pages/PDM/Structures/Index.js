@@ -1,9 +1,8 @@
+
 $(function () {
     var l = abp.localization.getResource('MvcDemoApplication');
-    var viewModal = new abp.ModalManager(abp.appPath + 'PDM/Structures/ViewHierarchy');
     var createModal = new abp.ModalManager(abp.appPath + 'PDM/Structures/CreateModal');
     var editModal = new abp.ModalManager(abp.appPath + 'PDM/Structures/UpdateModal');
-    var listModal = new abp.ModalManager(abp.appPath + 'PDM/Structures/Index');
 
     createModal.onResult(function () {
         dataTable.ajax.reload();
@@ -16,17 +15,6 @@ $(function () {
     $('#NewStructureButton').click(function (e) {
         e.preventDefault();
         createModal.open();
-    });
-    $("#previewHierarchy").click(function () {
-        if ($("#HierarchyTable").is(":visible")) {
-            $("#previewHierarchy").text("Show Preview");
-            $("#HierarchyTable").hide();
-        } else {
-            $("#previewHierarchy").text("Hide Preview");
-            $("#HierarchyTable").show();
-        }
-    });
-    $("#previewHierarchy").click(function () {
     });
 
     var dataTable = $('#StructuresTable').DataTable(

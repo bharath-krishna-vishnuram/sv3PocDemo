@@ -17,12 +17,37 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
     IComponentAppService
 {
     readonly IReadOnlyRepository<TextElement, Guid> _textElementRepository;
-    public ComponentAppService(IRepository<Component, Guid> repository, 
-        IReadOnlyRepository<TextElement, Guid> textElementRepository) : base(repository)
+    //readonly IReadOnlyRepository<ComponentDescriptor, Guid> _descriptorRepository;
+    readonly IReadOnlyRepository<DescriptorOption, Guid> _optionRepository;
+    public ComponentAppService(IRepository<Component, Guid> repository,
+        IReadOnlyRepository<TextElement, Guid> textElementRepository,
+        IReadOnlyRepository<DescriptorOption, Guid> optionRepository
+        ) : base(repository)
     {
         _textElementRepository = textElementRepository;
+        _optionRepository = optionRepository;
+    }
+    //public async Task<List<DescriptorOptionsDto>> GetAllDescriptorDetailsAsync(Guid ComponentId)
+    //{
+    //    var query = await _descriptorRepository.WithDetailsAsync(rec => rec.DescriptorOptions, rec => rec.AssociatedComponent);
+    //    var descriptors = await AsyncExecuter.ToListAsync(query.Where(rec => rec.AssociatedComponent.Id == ComponentId));
+    //    return ObjectMapper.Map<List<ComponentDescriptor>, List<DescriptorOptionsDto>>(descriptors);
+    //}
+    public async Task<List<IdNameDto<Guid>>> GetAllDescriptorOptionsAsync(Guid DescriptorId)
+    {
+        var query = await _optionRepository.WithDetailsAsync(rec => rec.AssociatedDescriptor);
+        var options = await AsyncExecuter.ToListAsync(query.Where(rec => rec.AssociatedDescriptor.Id == DescriptorId));
+        return ObjectMapper.Map<List<DescriptorOption>, List<IdNameDto<Guid>>>(options);
     }
 
+    public async Task<Guid> GetStructureIdAsync(Guid ComponentId)
+    {
+        var query = await Repository.WithDetailsAsync(rec => rec.AssociatedStructureElement);
+        var structureId = await AsyncExecuter.FirstOrDefaultAsync(query
+            .Where(rec => rec.Id == ComponentId)
+            .Select(rec => rec.AssociatedStructureElement.AssociatedStructureId));
+        return structureId;
+    }
 
     public async Task IncreaseOrderAsync(Guid ComponentId)
     {
@@ -67,13 +92,16 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
 
     protected override async Task<Component> GetEntityByIdAsync(Guid id)
     {
-        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors);
+        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors, rec => rec.SubComponents);
         return await AsyncExecuter.FirstAsync(query.Where(rec => rec.Id == id));
     }
 }
 
 public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, ComponentDto, Guid, ComponentDto, CreateUpdateComponentDto, CreateUpdateComponentDto>
 {
+    //Task<List<DescriptorOptionsDto>> GetAllDescriptorDetailsAsync(Guid ComponentId);
+    Task<List<IdNameDto<Guid>>> GetAllDescriptorOptionsAsync(Guid DescriptorId);
+    Task<Guid> GetStructureIdAsync(Guid ComponentId);
     Task IncreaseOrderAsync(Guid ComponentId);
     Task DecreaseOrderAsync(Guid ComponentId);
 }
@@ -96,7 +124,7 @@ public class ComponentDetailsDto : IdNameDto<Guid>
     public List<IdNameDto<Guid>> SubComponents { get; set; } = new();
 }
 
-[AutoMap(typeof(Component))]
+[AutoMap(typeof(ComponentDescriptor))]
 public class DescriptorOptionsDto : IdNameDto<Guid>
 {
     public List<IdNameDto<Guid>> DescriptorOptions { get; set; } = new();

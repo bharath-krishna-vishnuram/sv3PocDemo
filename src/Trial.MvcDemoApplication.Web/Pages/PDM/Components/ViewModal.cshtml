@@ -1,0 +1,103 @@
+﻿@page
+@model Trial.MvcDemoApplication.Web.Pages.PDM.Components.ViewModalModel
+
+@using Trial.MvcDemoApplication.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal;
+
+@inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["PageHeaders:Discriptors"];
+    PageLayout.Content.BreadCrumb.Add(L["PageHeaders:StructureHierarchy"], "/PDM/Structures/ViewHierarchy?id=" + Model.StructureId);
+    int i = 0;
+}
+<abp-card background="Light" text-color="Dark" border="Success" class="mb-3">
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                @L["PageHeaders:Discriptors"]
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+    <abp-card-body background="Light" text-color="Dark" border="Success" size-md="_1">
+        <abp-list-group>
+            <abp-list-group-item class="Component-group">
+                <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#DescriptorsSections" aria-expanded="true" aria-controls="collapseOne">
+                    @Model.Component.Name
+                </button>
+                <!-- Add Button -->
+                <abp-button class="btn-icon add-btn" icon="plus" title="Add Descriptor" />
+            </abp-list-group-item>
+            <abp-list-group flush="true">
+                <abp-collapse-body id="DescriptorsSections">
+                    @foreach (var descriptor in Model.Component.Descriptors)
+                    {
+                        <abp-list-group-item>
+                            <div class="accordion" id="@descriptor.Name">
+                                <div class="card-header" id="headingOne">
+                                    <button onclick="display('@descriptor.Id', '@i')" class="btn" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#@i" aria-expanded="true" aria-controls="collapseOne">
+                                        @descriptor.Name
+                                    </button>
+                                    <abp-button-group size="Small" background="Dark">
+                                        <!-- Add Button -->
+                                        <abp-button class="btn-icon add-btn" onclick="handleAdd('@Model.Id')" icon="plus" title="Add Option" />
+                                        <!-- Remove Button -->
+                                        <abp-button class="btn-icon remove-btn" onclick="handleRemove('@Model.Id')" icon="times"
+                                                    title="Remove Descriptor and its Options" />
+                                    </abp-button-group>
+                                </div>
+                            </div>
+
+                            <abp-collapse-body id="@i">
+                                <abp-list-group id="OptionsSection_@i">
+                                </abp-list-group>
+                            </abp-collapse-body>
+                        </abp-list-group-item>
+                        i++;
+                    }
+                </abp-collapse-body>
+            </abp-list-group>
+        </abp-list-group>
+    </abp-card-body>
+</abp-card>
+<script>
+    function display(descriptorId, idx) {
+        // Assuming trial.mvcDemoApplication.pDM.component.get is a function that returns a Promise
+        trial.mvcDemoApplication.pDM.component.getAllDescriptorOptions(descriptorId) // Replace 'id' with the actual ID if necessary
+            .then(options => {
+                    const list = document.getElementById('OptionsSection_' + idx);
+                    list.innerHTML = ''; // Clear the list before adding new items
+                    options.forEach(option => {
+                    let listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+
+                    let button = document.createElement('button');
+                    button.className = 'btn btn-sm';
+                    button.type = 'button';
+                    button.textContent = option.name;
+                    button.setAttribute('data-busy-text', 'Processing...');
+
+                    @*listItem.textContent = option.name;*@
+
+                    let removeButton = document.createElement('button');
+                    removeButton.className = 'btn-icon btn btn-sm';
+                    removeButton.type = 'button';
+                    removeButton.title = 'Remove Option'
+                    removeButton.setAttribute('data-busy-text', 'Processing...');
+
+                    let icon = document.createElement('i');
+                    icon.className = 'fa fa-times';
+                    removeButton.appendChild(icon);
+                    listItem.appendChild(button)
+                    listItem.appendChild(removeButton)
+                    list.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching descriptors:', error);
+            });
+    }
+</script>

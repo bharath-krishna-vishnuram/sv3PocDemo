@@ -1,9 +1,13 @@
 ﻿@page
 @using Trial.MvcDemoApplication.Web.Pages.PDM.Structures
 @model Trial.MvcDemoApplication.Web.Pages.PDM.Structures.ViewHierarchyModel
+
 @using Trial.MvcDemoApplication.Localization
 @using Microsoft.Extensions.Localization
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+
 @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal;
+
 @inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
 @{
     PageLayout.Content.Title = L["PageHeaders:StructureHierarchy"];
@@ -12,7 +16,6 @@
     ViewData["structureId"] = @Model.Id;
 }
 
-@inject IStringLocalizer<MvcDemoApplicationResource> L
 @section scripts
 {
     <abp-script src="/Pages/PDM/Structures/Index.js" />

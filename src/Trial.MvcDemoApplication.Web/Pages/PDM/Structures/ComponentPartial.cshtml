@@ -111,8 +111,8 @@
         createModal.open({ parentComponentId: componentId })
             createModal.onResult(function () {
                 abp.notify.info('Added Sub-component Successfully!');
-                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
-            });
+            location.reload()
+        });
     }
 
     function handleRemove(id) {
@@ -120,7 +120,7 @@
         trial.mvcDemoApplication.pDM.component.delete(id)
             .then(function (data) {
                 abp.notify.info('Successfully deleted!');
-                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+                location.reload()
             })
     }
 
@@ -128,7 +128,7 @@
         trial.mvcDemoApplication.pDM.component.decreaseOrder(componentId)
             .then(function (data) {
                 abp.notify.info('Moved component sucessfully!');
-                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+                location.reload()
             })
     }
 
@@ -137,13 +137,14 @@
         trial.mvcDemoApplication.pDM.component.increaseOrder(componentId)
             .then(function (data) {
                 abp.notify.info('Moved component sucessfully!');
-                location.href = "/PDM/Structures/ViewHierarchy?id=" + '@structureId';
+                location.reload()
             })
     }
-    function handleView(id) {
+    function handleView(componentId) {
         // logic for View Component Details
-        @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
-        alert('View Component Details for ID: ' + id);
+        location.href = "/PDM/Components/ViewModal?id=" + componentId;
+    @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
+            alert('View Component Details for ID: ' + componentId);
     }
 </script>
 

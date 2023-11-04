@@ -89,6 +89,21 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         var subComponent = parentComponent.AddSubComponent(newSubComponentName);
         return subComponent;
     }
+    public async Task AddDescriptorAsync(Guid ComponentId, Guid DescriptorNameId)
+    {
+        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors);
+        var component = await AsyncExecuter.FirstOrDefaultAsync(query.Where(rec => rec.Id == ComponentId))!
+            ?? throw new UserFriendlyException($"Component with id:{ComponentId} not found");
+        var newDescriptorName = await _textElementRepository.GetAsync(DescriptorNameId)!;
+        component.AddDescriptor(newDescriptorName);
+    }
+    public async Task RemoveDescriptorAsync(Guid ComponentId, Guid DescriptorId)
+    {
+        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors.Where(d => d.Id == DescriptorId));
+        var component = await AsyncExecuter.FirstOrDefaultAsync(query.Where(rec => rec.Id == ComponentId))!
+            ?? throw new UserFriendlyException($"Component with id:{ComponentId} not found");
+        component.Descriptors.RemoveAll(rec => rec.Id == DescriptorId);
+    }
 
     protected override async Task<Component> GetEntityByIdAsync(Guid id)
     {
@@ -104,6 +119,8 @@ public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, Com
     Task<Guid> GetStructureIdAsync(Guid ComponentId);
     Task IncreaseOrderAsync(Guid ComponentId);
     Task DecreaseOrderAsync(Guid ComponentId);
+    Task AddDescriptorAsync(Guid ComponentId, Guid DescriptorNameId);
+    Task RemoveDescriptorAsync(Guid ComponentId, Guid DescriptorId);
 }
 
 [AutoMap(typeof(Component))]

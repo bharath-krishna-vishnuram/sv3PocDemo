@@ -26,10 +26,10 @@ public class Component : FullAuditedEntity<Guid>
         Name = _name;
     }
 
-    internal ComponentDescriptor AddDescriptor(TextElement descriptorText)
+    public ComponentDescriptor AddDescriptor(TextElement descriptorText)
     {
         if (Descriptors.Any(c => c.Name.TextName == descriptorText.TextName))
-            throw new Exception($"Subcomponent {descriptorText} already part of component {Name}");
+            throw new UserFriendlyException($"Subcomponent {descriptorText} already part of component {Name}");
         ComponentDescriptor descriptor = new(descriptorText);
         Descriptors.Add(descriptor);
         return descriptor;

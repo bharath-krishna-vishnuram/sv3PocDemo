@@ -1,3 +1,4 @@
+using AutoMapper.Internal.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PDM.Models;
@@ -13,6 +14,9 @@ namespace Trial.MvcDemoApplication.Web.Pages.PDM.Components
         [HiddenInput]
         [BindProperty(SupportsGet = true)]
         public Guid Id { get; set; }
+        
+        [BindProperty]
+        public Guid DescriptorNameId { get; set; }
         
         public Guid StructureId { get; set; }
 
@@ -33,6 +37,12 @@ namespace Trial.MvcDemoApplication.Web.Pages.PDM.Components
             Component = await _componentAppService.GetAsync(Id);
             StructureId = await _componentAppService.GetStructureIdAsync(Id);
             //DescriptorDetailsList = await _componentAppService.GetAllDescriptorDetailsAsync(Id);
+        }
+        public async Task<IActionResult> OnPostAsync()
+        {
+            await _componentAppService.AddDescriptorAsync(Id, DescriptorNameId);
+            return RedirectToPage("/PDM/Components/ViewModal", new { id = Id });
+
         }
     }
 }

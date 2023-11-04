@@ -28,34 +28,34 @@
                     @Model.Component.Name
                 </button>
                 <!-- Add Button -->
-                <abp-button class="btn-icon add-btn" icon="plus" title="Add Descriptor" />
+                <abp-button class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addDescriptor" icon="plus" title="Add Descriptor" />
             </abp-list-group-item>
             <abp-list-group flush="true">
                 <abp-collapse-body id="DescriptorsSections">
                     @foreach (var descriptor in Model.Component.Descriptors)
                     {
-                        <abp-list-group-item>
-                            <div class="accordion" id="@descriptor.Name">
-                                <div class="card-header" id="headingOne">
-                                    <button onclick="display('@descriptor.Id', '@i')" class="btn" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#@i" aria-expanded="true" aria-controls="collapseOne">
+                            <abp-list-group-item>
+                                <div class="accordion" id="@descriptor.Name">
+                                    <div class="card-header" id="headingOne">
+                                        <button onclick="display('@descriptor.Id', '@i')" class="btn" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#@i" aria-expanded="true" aria-controls="collapseOne">
                                         @descriptor.Name
-                                    </button>
-                                    <abp-button-group size="Small" background="Dark">
-                                        <!-- Add Button -->
-                                        <abp-button class="btn-icon add-btn" onclick="handleAdd('@Model.Id')" icon="plus" title="Add Option" />
-                                        <!-- Remove Button -->
-                                        <abp-button class="btn-icon remove-btn" onclick="handleRemove('@Model.Id')" icon="times"
-                                                    title="Remove Descriptor and its Options" />
-                                    </abp-button-group>
+                                        </button>
+                                        <abp-button-group size="Small" background="Dark">
+                                            <!-- Add Button -->
+                                            <abp-button class="btn-icon add-btn" onclick="handleAdd('@descriptor.Id')" icon="plus" title="Add Option" />
+                                            <!-- Remove Button -->
+                                            <abp-button class="btn-icon remove-btn" onclick="removeDescriptor('@Model.Id', '@descriptor.Id')" icon="times"
+                                                        title="Remove Descriptor and its Options" />
+                                        </abp-button-group>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <abp-collapse-body id="@i">
-                                <abp-list-group id="OptionsSection_@i">
-                                </abp-list-group>
-                            </abp-collapse-body>
-                        </abp-list-group-item>
+                                <abp-collapse-body id="@i">
+                                    <abp-list-group id="OptionsSection_@i">
+                                    </abp-list-group>
+                                </abp-collapse-body>
+                            </abp-list-group-item>
                         i++;
                     }
                 </abp-collapse-body>
@@ -63,6 +63,27 @@
         </abp-list-group>
     </abp-card-body>
 </abp-card>
+    <abp-modal centered="true" scrollable="true" size="Large" id="addDescriptor">
+        <abp-modal-header title="Add new Descriptor"></abp-modal-header>
+        <form method="post">
+            <abp-modal-body>
+                <label>Descriptor Name</label>
+                    <select asp-for="DescriptorNameId"
+                            class="auto-complete-select"
+                            data-autocomplete-api-url="/api/app/text?IsDescriptor=true"
+                            data-autocomplete-display-property="textName"
+                            data-autocomplete-value-property="id"
+                            data-autocomplete-items-property="items"
+                            data-autocomplete-filter-param-name="filter"
+                            data-autocomplete-allow-clear="true">
+                        <!-- You can define selected option(s) here  -->
+                            @*<option selected value="@Model.StructureData.NameId">""</option>*@
+                    </select>
+            </abp-modal-body>
+            <abp-modal-footer buttons="@(AbpModalButtons.Save|AbpModalButtons.Close)"></abp-modal-footer>
+        </form>
+    </abp-modal>
+
 <script>
     function display(descriptorId, idx) {
         // Assuming trial.mvcDemoApplication.pDM.component.get is a function that returns a Promise
@@ -80,7 +101,7 @@
                     button.textContent = option.name;
                     button.setAttribute('data-busy-text', 'Processing...');
 
-                    @*listItem.textContent = option.name;*@
+    @*listItem.textContent = option.name;*@
 
                     let removeButton = document.createElement('button');
                     removeButton.className = 'btn-icon btn btn-sm';
@@ -99,5 +120,14 @@
             .catch(error => {
                 console.error('Error fetching descriptors:', error);
             });
+    }
+
+    function removeDescriptor(componentId, descriptorId) {
+        // logic for handling remove operation
+        trial.mvcDemoApplication.pDM.component.removeDescriptor(componentId, descriptorId)
+            .then(function (data) {
+                abp.notify.info('Successfully deleted!');
+                location.reload()
+            })
     }
 </script>

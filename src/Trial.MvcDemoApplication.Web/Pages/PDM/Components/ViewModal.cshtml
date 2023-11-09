@@ -43,7 +43,7 @@
                                         </button>
                                         <abp-button-group size="Small" background="Dark">
                                             <!-- Add Button -->
-                                            <abp-button class="btn-icon add-btn" onclick="handleAdd('@descriptor.Id')" icon="plus" title="Add Option" />
+                                                    <abp-button class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addOption" onclick="handleOptionAdd('@Model.Id', '@descriptor.Id')" icon="plus" title="Add Option" />
                                             <!-- Remove Button -->
                                             <abp-button class="btn-icon remove-btn" onclick="removeDescriptor('@Model.Id', '@descriptor.Id')" icon="times"
                                                         title="Remove Descriptor and its Options" />
@@ -63,21 +63,44 @@
         </abp-list-group>
     </abp-card-body>
 </abp-card>
-    <abp-modal centered="true" scrollable="true" size="Large" id="addDescriptor">
+    <abp-modal centered="true" scrollable="true" size="Small" id="addDescriptor">
         <abp-modal-header title="Add new Descriptor"></abp-modal-header>
         <form method="post">
             <abp-modal-body>
                 <label>Descriptor Name</label>
-                    <select asp-for="DescriptorNameId"
+                    <select id="DescriptorNameId" asp-for="DescriptorNameId"
                             class="auto-complete-select"
                             data-autocomplete-api-url="/api/app/text?IsDescriptor=true"
                             data-autocomplete-display-property="textName"
                             data-autocomplete-value-property="id"
                             data-autocomplete-items-property="items"
                             data-autocomplete-filter-param-name="filter"
+                            data-autocomplete-parent-selector="#addDescriptor"
                             data-autocomplete-allow-clear="true">
                         <!-- You can define selected option(s) here  -->
-                            @*<option selected value="@Model.StructureData.NameId">""</option>*@
+                    </select>
+            </abp-modal-body>
+            <abp-modal-footer buttons="@(AbpModalButtons.Save|AbpModalButtons.Close)"></abp-modal-footer>
+        </form>
+    </abp-modal>
+
+    <abp-modal  centered="true" scrollable="true" size="Small" id="addOption">
+        <abp-modal-header title="Add New Option"></abp-modal-header>
+        <form method="post" asp-page-handler="AddOption"> >
+            <abp-modal-body>
+                <input type="hidden" asp-for="AssociatedDescriptorId" value="">
+                <input type="hidden" asp-for="Id" value="">
+
+                <label>Option Name</label>
+                    <select asp-for="OptionsNameId"
+                            class="auto-complete-select"
+                            data-autocomplete-api-url="/api/app/text?IsOption=true"
+                            data-autocomplete-display-property="textName"
+                            data-autocomplete-value-property="id"
+                            data-autocomplete-parent-selector="#addOption"
+                            data-autocomplete-items-property="items"
+                            data-autocomplete-filter-param-name="filter"
+                            data-autocomplete-allow-clear="true">
                     </select>
             </abp-modal-body>
             <abp-modal-footer buttons="@(AbpModalButtons.Save|AbpModalButtons.Close)"></abp-modal-footer>
@@ -101,13 +124,20 @@
                     button.textContent = option.name;
                     button.setAttribute('data-busy-text', 'Processing...');
 
-    @*listItem.textContent = option.name;*@
 
                     let removeButton = document.createElement('button');
                     removeButton.className = 'btn-icon btn btn-sm';
                     removeButton.type = 'button';
                     removeButton.title = 'Remove Option'
                     removeButton.setAttribute('data-busy-text', 'Processing...');
+                    removeButton.onclick = function() {
+                            // logic for handling remove operation
+                            trial.mvcDemoApplication.pDM.component.removeOption(option.id)
+                                .then(function (data) {
+                                    abp.notify.info('Successfully deleted!');
+                                    location.reload()
+                                })
+                            };
 
                     let icon = document.createElement('i');
                     icon.className = 'fa fa-times';
@@ -129,5 +159,9 @@
                 abp.notify.info('Successfully deleted!');
                 location.reload()
             })
+    }
+    function handleOptionAdd(componentId, descriptorId) {
+            document.getElementById('AssociatedDescriptorId').value = descriptorId;
+            document.getElementById('Id').value = componentId;
     }
 </script>

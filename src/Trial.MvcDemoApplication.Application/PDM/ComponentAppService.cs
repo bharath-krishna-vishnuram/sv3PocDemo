@@ -17,15 +17,17 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
     IComponentAppService
 {
     readonly IReadOnlyRepository<TextElement, Guid> _textElementRepository;
-    //readonly IReadOnlyRepository<ComponentDescriptor, Guid> _descriptorRepository;
-    readonly IReadOnlyRepository<DescriptorOption, Guid> _optionRepository;
+    readonly IReadOnlyRepository<ComponentDescriptor, Guid> _descriptorRepository;
+    readonly IRepository<DescriptorOption, Guid> _optionRepository;
     public ComponentAppService(IRepository<Component, Guid> repository,
         IReadOnlyRepository<TextElement, Guid> textElementRepository,
-        IReadOnlyRepository<DescriptorOption, Guid> optionRepository
-        ) : base(repository)
+        IReadOnlyRepository<ComponentDescriptor, Guid> descriptorRepository,
+        IRepository<DescriptorOption, Guid> optionRepository
+) : base(repository)
     {
         _textElementRepository = textElementRepository;
         _optionRepository = optionRepository;
+        _descriptorRepository = descriptorRepository;
     }
     //public async Task<List<DescriptorOptionsDto>> GetAllDescriptorDetailsAsync(Guid ComponentId)
     //{
@@ -103,16 +105,15 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
     }
     public async Task AddOptionsAsync(Guid DescriptorId, Guid OptionsNameId)
     {
-        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors.Where(d => d.Id == DescriptorId));
-        var descriptors = await AsyncExecuter.FirstOrDefaultAsync(query.Select(rec => rec.Descriptors));
-        var descriptor = descriptors.FirstOrDefault(d => d.Id == DescriptorId)!
-            ?? throw new UserFriendlyException($"descriptor with id:{DescriptorId} not found");
-        var newDescriptorOptionName = await _textElementRepository.GetAsync(OptionsNameId)!;
-        if (!newDescriptorOptionName.IsOption)
+        var query = await _descriptorRepository.GetQueryableAsync();
+        var descriptor = await AsyncExecuter.FirstOrDefaultAsync(query.Where(d => d.Id == DescriptorId))!
+                   ?? throw new UserFriendlyException($"descriptor with id:{DescriptorId} not found");
+        var DescriptorOptionName = await _textElementRepository.GetAsync(OptionsNameId)!;
+        if (!DescriptorOptionName.IsOption)
         {
             throw new UserFriendlyException("Text selected is not meant for options");
         }
-        descriptor.AddDescriptorOption(newDescriptorOptionName);
+        descriptor.AddDescriptorOption(DescriptorOptionName);
     }
     public async Task RemoveDescriptorAsync(Guid ComponentId, Guid DescriptorId)
     {
@@ -120,6 +121,10 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         var component = await AsyncExecuter.FirstOrDefaultAsync(query.Where(rec => rec.Id == ComponentId))!
             ?? throw new UserFriendlyException($"Component with id:{ComponentId} not found");
         component.Descriptors.RemoveAll(rec => rec.Id == DescriptorId);
+    }
+    public async Task RemoveOptionAsync(Guid OptionId)
+    {
+        await _optionRepository.DeleteAsync(OptionId);
     }
 
     protected override async Task<Component> GetEntityByIdAsync(Guid id)
@@ -139,6 +144,7 @@ public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, Com
     Task AddDescriptorAsync(Guid ComponentId, Guid DescriptorNameId);
     Task RemoveDescriptorAsync(Guid ComponentId, Guid DescriptorId);
     Task AddOptionsAsync(Guid DescriptorId, Guid OptionsNameId);
+    Task RemoveOptionAsync(Guid OptionId);
 
 }
 

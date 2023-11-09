@@ -31,7 +31,7 @@ public class MvcDemoApplicationDbContext :
     public DbSet<Structure> Structures { get; set; }
     public DbSet<StructureElement> StructureElements { get; set; }
     public DbSet<Component> Components { get; set; }
-    //public DbSet<ComponentDescriptor> ComponentDescriptors { get; set; }
+    public DbSet<ComponentDescriptor> ComponentDescriptor { get; set; }
     public DbSet<DescriptorOption> Options { get; set; }
 
     #region Entities from the modules

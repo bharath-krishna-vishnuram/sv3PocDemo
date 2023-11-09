@@ -95,7 +95,24 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         var component = await AsyncExecuter.FirstOrDefaultAsync(query.Where(rec => rec.Id == ComponentId))!
             ?? throw new UserFriendlyException($"Component with id:{ComponentId} not found");
         var newDescriptorName = await _textElementRepository.GetAsync(DescriptorNameId)!;
+        if (!newDescriptorName.IsDescriptor)
+        {
+            throw new UserFriendlyException("Text selected is not meant for descriptor");
+        }
         component.AddDescriptor(newDescriptorName);
+    }
+    public async Task AddOptionsAsync(Guid DescriptorId, Guid OptionsNameId)
+    {
+        var query = await Repository.WithDetailsAsync(rec => rec.Descriptors.Where(d => d.Id == DescriptorId));
+        var descriptors = await AsyncExecuter.FirstOrDefaultAsync(query.Select(rec => rec.Descriptors));
+        var descriptor = descriptors.FirstOrDefault(d => d.Id == DescriptorId)!
+            ?? throw new UserFriendlyException($"descriptor with id:{DescriptorId} not found");
+        var newDescriptorOptionName = await _textElementRepository.GetAsync(OptionsNameId)!;
+        if (!newDescriptorOptionName.IsOption)
+        {
+            throw new UserFriendlyException("Text selected is not meant for options");
+        }
+        descriptor.AddDescriptorOption(newDescriptorOptionName);
     }
     public async Task RemoveDescriptorAsync(Guid ComponentId, Guid DescriptorId)
     {
@@ -121,6 +138,8 @@ public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, Com
     Task DecreaseOrderAsync(Guid ComponentId);
     Task AddDescriptorAsync(Guid ComponentId, Guid DescriptorNameId);
     Task RemoveDescriptorAsync(Guid ComponentId, Guid DescriptorId);
+    Task AddOptionsAsync(Guid DescriptorId, Guid OptionsNameId);
+
 }
 
 [AutoMap(typeof(Component))]

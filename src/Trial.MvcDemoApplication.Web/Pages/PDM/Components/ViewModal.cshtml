@@ -10,7 +10,7 @@
 @inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
 @{
     PageLayout.Content.Title = L["PageHeaders:Discriptors"];
-    PageLayout.Content.BreadCrumb.Add(L["PageHeaders:StructureHierarchy"], "/PDM/Structures/ViewHierarchy?id=" + Model.StructureId);
+    PageLayout.Content.BreadCrumb.Add(L["PageHeaders:StructureConstruction"], "/PDM/Structures/ViewHierarchy?id=" + Model.StructureId);
     int i = 0;
 }
 <abp-card background="Light" text-color="Dark" border="Success" class="mb-3">

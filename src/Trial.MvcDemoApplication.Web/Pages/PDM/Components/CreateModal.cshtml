@@ -7,7 +7,7 @@
     Layout = null;
 }
 <abp-dynamic-form abp-model="ComponentData" asp-page="/PDM/Components/CreateModal">
-    <abp-modal>
+    <abp-modal id="addSubComponent">
         <abp-modal-header title="@L["New Sub-Component"].Value"></abp-modal-header>
         <abp-modal-body>
             <label>Component Name</label>
@@ -17,6 +17,7 @@
                     data-autocomplete-display-property="textName"
                     data-autocomplete-value-property="id"
                     data-autocomplete-items-property="items"
+                    data-autocomplete-parent-selector="#addSubComponent"
                     data-autocomplete-filter-param-name="filter"
                     data-autocomplete-allow-clear="true">
                 <!-- You can define selected option(s) here  -->

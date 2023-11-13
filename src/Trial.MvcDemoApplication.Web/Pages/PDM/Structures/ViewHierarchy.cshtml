@@ -10,7 +10,7 @@
 
 @inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
 @{
-    PageLayout.Content.Title = L["PageHeaders:StructureHierarchy"];
+    PageLayout.Content.Title = L["PageHeaders:StructureConstruction"];
     PageLayout.Content.BreadCrumb.Add(L["PageHeaders:Structures"], "/PDM/Structures");
     ViewData["isRootLevel"] = true;
     ViewData["structureId"] = @Model.Id;
@@ -25,16 +25,15 @@
     <abp-card-header>
         <abp-row>
             <abp-column size-md="_6">
-                @L["PageHeaders:StructureHierarchy"]
+                @L["PageHeaders:StructureConstruction"]
             </abp-column>
             <abp-column size-md="_6" class="text-end">
                 <abp-button id="previewHierarchy"
-                            text="@L["Toggle Hierarchy View"].Value"
+                            text="@L["Hierarchy View"].Value"
                             icon="eye"
                             onclick="populateStructureHierarchy('@Model.Id')"
-                            abp-collapse-id="HierarchyView"
-                            button-type="Success"
-                            />
+                            data-bs-toggle="modal" data-bs-target="#structureDiagram"
+                            button-type="Success" />
             </abp-column>
         </abp-row>
     </abp-card-header>
@@ -50,8 +49,10 @@
     </abp-card-body>
 </abp-card>
 
-<abp-collapse-body id="HierarchyView">
-</abp-collapse-body>
+<abp-modal centered="true" scrollable="true" size="Large" id="structureDiagram">
+    <abp-modal-header title="Structure Diagram"/>
+    <abp-modal-body id="HierarchyView"/>
+</abp-modal>
 
 <script>
     // Function to convert data to HTML tree structure
@@ -82,8 +83,6 @@
     }
 
      //Event listener for the button click
-
-    //document.getElementById('previewHierarchy').addEventListener('click', function ()
     function populateStructureHierarchy(structureId) {
         // Call convertToHtmlTree with your data
         trial.mvcDemoApplication.pDM.structure.getStructureHierarchy(structureId)

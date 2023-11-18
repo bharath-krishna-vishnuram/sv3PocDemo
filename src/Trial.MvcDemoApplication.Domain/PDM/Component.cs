@@ -19,6 +19,7 @@ public class Component : FullAuditedEntity<Guid>
     //public Guid AssociatedStructureElementId { get; set; } 
 
     public List<ComponentDescriptor> Descriptors { get; set; } = new();
+    public List<ComponentDescriptor> ConstraintDescriptors { get; set; } = new();
     public List<Component> SubComponents { get; set; } = new();
     public Component() => Id = Guid.NewGuid();
     private Component(TextElement _name) : this()
@@ -33,6 +34,22 @@ public class Component : FullAuditedEntity<Guid>
         ComponentDescriptor descriptor = new(descriptorText);
         Descriptors.Add(descriptor);
         return descriptor;
+    }
+
+    public ComponentDescriptor AddConstraintDescriptor(ComponentDescriptor constraint)
+    {
+        if (ConstraintDescriptors.Any(c => c.Name.TextName == constraint.Name.TextName))
+            throw new UserFriendlyException($"Constraint {constraint.Name} already part of component {Name}");
+
+        if (constraint.AssociatedComponent.Id == Id)
+            throw new UserFriendlyException($"Constraint Descriptor [{constraint.Name}] already part of component descriptors");
+
+        if (constraint.AssociatedComponent.AssociatedStructureElement.AssociatedStructureId != 
+            AssociatedStructureElement.AssociatedStructureId)
+            throw new UserFriendlyException($"Constraint Descriptor [{constraint.Name}] not part of component structure");
+
+        ConstraintDescriptors.Add(constraint);
+        return constraint;
     }
 
     public Component AddSubComponent(TextElement subComponentName)
@@ -78,8 +95,6 @@ public class Component : FullAuditedEntity<Guid>
         requestSubComponent.AssociatedStructureElement.ElementOrder = nextSubComponent.AssociatedStructureElement.ElementOrder;
         nextSubComponent.AssociatedStructureElement.ElementOrder = componentDetails.Value;
     }
-
-    //public List<ComponentDescriptorConstraint> DescriptorConstraints { get; set; } = new();
 }
 
 public class ComponentDescriptor : FullAuditedEntity<Guid>
@@ -102,6 +117,7 @@ public class ComponentDescriptor : FullAuditedEntity<Guid>
     public string Description { get; set; } = string.Empty;
     public Component AssociatedComponent { get; set; } = null!;
     public List<DescriptorOption> DescriptorOptions { get; set; } = new();
+    public List<Component> ConstraintComponents { get; set; } = new();
 }
 
 public class DescriptorOption : FullAuditedEntity<Guid>

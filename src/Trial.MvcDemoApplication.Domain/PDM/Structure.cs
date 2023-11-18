@@ -123,6 +123,38 @@ public class Structure : FullAuditedEntity<Guid>
         return assembly;
     }
 
+    // Breadth-first traversal function
+    public List<Component> GetComponentsBeforeElement(Guid targetStructureElementId)
+    {
+        if (RootComponent == null)
+        {
+            return new List<Component>();
+        }
+
+        var traversedComponents = new List<Component>();
+        var queue = new Queue<Component>();
+        queue.Enqueue(RootComponent);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            traversedComponents.Add(current);
+
+            if (current.AssociatedStructureElement.Id == targetStructureElementId)
+            {
+                break;
+            }
+
+            foreach (var subComponent in current.SubComponents)
+            {
+                queue.Enqueue(subComponent);
+            }
+        }
+
+        return traversedComponents;
+    }
+
+
     public void UpdateName(TextElement newStructureName)
     {
         Name = newStructureName;

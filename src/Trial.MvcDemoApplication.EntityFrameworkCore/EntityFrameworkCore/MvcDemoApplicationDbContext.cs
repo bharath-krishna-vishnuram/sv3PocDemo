@@ -112,6 +112,11 @@ public class MvcDemoApplicationDbContext :
                 e.HasOne(Component => Component.Name)
                 .WithMany(text => text.Components)
                 .OnDelete(DeleteBehavior.NoAction);
+                //e.HasMany(c => c.ConstraintDescriptors)
+                //.WithMany(d => d.ConstraintComponents);
+                e.HasMany(c => c.Descriptors)
+                .WithOne(d => d.AssociatedComponent)
+                ;
                 e.Navigation(Component => Component.Name).AutoInclude();
             });
 

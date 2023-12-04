@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -127,9 +128,7 @@ public class Structure : FullAuditedEntity<Guid>
     public List<Component> GetComponentsBeforeElement(Guid targetStructureElementId)
     {
         if (RootComponent == null)
-        {
             return new List<Component>();
-        }
 
         var traversedComponents = new List<Component>();
         var queue = new Queue<Component>();
@@ -138,19 +137,16 @@ public class Structure : FullAuditedEntity<Guid>
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            traversedComponents.Add(current);
 
             if (current.AssociatedStructureElement.Id == targetStructureElementId)
-            {
                 break;
-            }
 
-            foreach (var subComponent in current.SubComponents)
-            {
+            if (current.Id != RootComponent.Id)
+                traversedComponents.Add(current);
+
+            foreach (var subComponent in current.SubComponents.OrderBy(rec => rec.AssociatedStructureElement.ElementOrder))
                 queue.Enqueue(subComponent);
-            }
         }
-
         return traversedComponents;
     }
 

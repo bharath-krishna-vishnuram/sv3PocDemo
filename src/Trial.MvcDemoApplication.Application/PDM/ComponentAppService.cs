@@ -137,7 +137,7 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         var structure = elements.Select(rec => rec.AssociatedStructure).FirstOrDefault();
         return structure!;
     }
-    public async Task<List<IdNameDto<Guid>>> GetAllConstraintComponentsAsync(Guid ComponentId)
+    public async Task<List<IdNameDto<Guid>>> GetAllConstraintComponentsAsync(Guid ComponentId, string? ComponentNameFilter)
     {
         var componentQuery = await Repository.WithDetailsAsync(rec => rec.AssociatedStructureElement);
         var structureElement = await AsyncExecuter.FirstOrDefaultAsync(componentQuery.Where(rec => rec.Id == ComponentId)
@@ -145,7 +145,8 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
             ?? throw new EntityNotFoundException($"Component with id:{ComponentId} not found");
         var structure = await GetStructureWithHierarchyDetailsAsync(structureElement.AssociatedStructureId);
         List<Component> allowedComponents = structure.GetComponentsBeforeElement(structureElement.Id);
-        return ObjectMapper.Map<List<Component>, List<IdNameDto<Guid>>>(allowedComponents);
+        var results = ObjectMapper.Map<List<Component>, List<IdNameDto<Guid>>>(allowedComponents);
+        return results.WhereIf(!ComponentNameFilter.IsNullOrEmpty(), rec => rec.Name.ToLower().Contains(ComponentNameFilter!.ToLower())).ToList(); 
     }
     public async Task AddConstraintDescriptorAsync(Guid ComponentId, Guid DescriptorId)
     {
@@ -183,7 +184,7 @@ public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, Com
     Task AddDescriptorOptionsAsync(Guid DescriptorId, Guid OptionsNameId);
     Task RemoveDescriptorOptionAsync(Guid OptionId);
 
-    Task<List<IdNameDto<Guid>>> GetAllConstraintComponentsAsync(Guid ComponentId);
+    Task<List<IdNameDto<Guid>>> GetAllConstraintComponentsAsync(Guid ComponentId, string? ComponentNameFilter);
     Task AddConstraintDescriptorAsync(Guid ComponentId, Guid DescriptorId);
     Task RemoveConstraintDescriptorAsync(Guid ComponentId, Guid DescriptorId);
 }

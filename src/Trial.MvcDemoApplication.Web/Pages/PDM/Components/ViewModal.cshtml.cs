@@ -51,7 +51,7 @@ public class ViewModalModel : PageModel
     }
     public async Task<IActionResult> OnPostAddOptionAsync()
     {
-        await _componentAppService.AddOptionsAsync(AssociatedDescriptorId, OptionsNameId);
+        await _componentAppService.AddDescriptorOptionsAsync(AssociatedDescriptorId, OptionsNameId);
         return RedirectToPage("/PDM/Components/ViewModal", new { id = Id });
     }
 

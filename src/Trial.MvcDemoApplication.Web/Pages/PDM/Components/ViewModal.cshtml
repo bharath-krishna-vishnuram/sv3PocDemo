@@ -13,6 +13,31 @@
     PageLayout.Content.BreadCrumb.Add(L["PageHeaders:StructureConstruction"], "/PDM/Structures/ViewHierarchy?id=" + Model.StructureId);
     int i = 0;
 }
+<style>
+
+    /* General button styles */
+    .btn-icon:hover {
+        background-color: #d0d0d0; /* Darker grey on hover */
+    }
+
+    .add-btn .fas {
+        color: green;
+    }
+
+    .remove-btn .fas {
+        color: red;
+    }
+
+    .up-btn .fas, .down-btn .fas {
+        color: #333; /* Dark gray, adjust as needed */
+    }
+
+    /* Icons within the buttons */
+    .btn-icon i {
+        font-size: 12px; /* Size of the icon */
+    }
+
+</style>
 <abp-card background="Light" text-color="Dark" border="Success" class="mb-3">
     <abp-card-header>
         <abp-row>
@@ -27,35 +52,64 @@
                 <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#DescriptorsSections" aria-expanded="true" aria-controls="collapseOne">
                     @Model.Component.Name
                 </button>
-                <!-- Add Button -->
-                <abp-button class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addDescriptor" icon="plus" title="Add Descriptor" />
+                <abp-button-group size="Small" background="Dark">
+                    <!-- Add Button -->
+                    <abp-button button-type="Light" class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addDescriptor" icon="plus" title="Add Descriptor" />
+                    <!-- Add Button -->
+                    <abp-button button-type="Dark" class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addConstraint" icon="plus" title="Add Constraint" />
+                </abp-button-group>
             </abp-list-group-item>
             <abp-list-group flush="true">
                 <abp-collapse-body id="DescriptorsSections">
                     @foreach (var descriptor in Model.Component.Descriptors)
                     {
-                            <abp-list-group-item>
-                                <div class="accordion" id="@descriptor.Name">
-                                    <div class="card-header" id="headingOne">
-                                        <button onclick="display('@descriptor.Id', '@i')" class="btn" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#@i" aria-expanded="true" aria-controls="collapseOne">
+                        <abp-list-group-item>
+                            <div class="accordion" id="@descriptor.Name">
+                                <div class="card-header" id="headingOne">
+                                    <button onclick="display('@descriptor.Id', '@i')" class="btn" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#@i" aria-expanded="true" aria-controls="collapseOne">
                                         @descriptor.Name
-                                        </button>
-                                        <abp-button-group size="Small" background="Dark">
-                                            <!-- Add Button -->
-                                                    <abp-button class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addOption" onclick="handleOptionAdd('@Model.Id', '@descriptor.Id')" icon="plus" title="Add Option" />
-                                            <!-- Remove Button -->
-                                            <abp-button class="btn-icon remove-btn" onclick="removeDescriptor('@Model.Id', '@descriptor.Id')" icon="times"
-                                                        title="Remove Descriptor and its Options" />
-                                        </abp-button-group>
-                                    </div>
+                                    </button>
+                                    <abp-button-group size="Small" background="Dark">
+                                        <!-- Add Button -->
+                                        <abp-button class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addOption"
+                                                    onclick="handleOptionAdd('@Model.Id', '@descriptor.Id')" icon="plus" title="Add Option" />
+                                        <!-- Remove Button -->
+                                        <abp-button class="btn-icon remove-btn" onclick="removeDescriptor('@Model.Id', '@descriptor.Id')" icon="times"
+                                                    title="Remove Descriptor and its Options" />
+                                    </abp-button-group>
                                 </div>
+                            </div>
 
-                                <abp-collapse-body id="@i">
-                                    <abp-list-group id="OptionsSection_@i">
-                                    </abp-list-group>
-                                </abp-collapse-body>
-                            </abp-list-group-item>
+                            <abp-collapse-body id="@i">
+                                <abp-list-group id="OptionsSection_@i">
+                                </abp-list-group>
+                            </abp-collapse-body>
+                        </abp-list-group-item>
+                        i++;
+                    }
+                    @foreach (var descriptor in Model.Component.ConstraintDescriptors)
+                    {
+                        <abp-list-group-item>
+                            <div class="accordion" id="@descriptor.Name">
+                                <div class="card-header" id="headingOne">
+                                    <button onclick="display('@descriptor.Id', '@i')" class="btn" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#@i" aria-expanded="true" aria-controls="collapseOne">
+                                        @descriptor.Name
+                                    </button>
+                                    <abp-button-group size="Small" background="Dark">
+                                        <!-- Remove Button -->
+                                        <abp-button class="btn-icon remove-btn" onclick="removeConstraint('@Model.Id', '@descriptor.Id')" icon="times"
+                                                    title="Remove Constraint Descriptor" />
+                                    </abp-button-group>
+                                </div>
+                            </div>
+
+                            <abp-collapse-body id="@i">
+                                <abp-list-group id="OptionsSection_@i">
+                                </abp-list-group>
+                            </abp-collapse-body>
+                        </abp-list-group-item>
                         i++;
                     }
                 </abp-collapse-body>
@@ -63,26 +117,46 @@
         </abp-list-group>
     </abp-card-body>
 </abp-card>
-    <abp-modal centered="true" scrollable="true" size="Small" id="addDescriptor">
-        <abp-modal-header title="Add new Descriptor"></abp-modal-header>
-        <form method="post">
-            <abp-modal-body>
-                <label>Descriptor Name</label>
-                    <select id="DescriptorNameId" asp-for="DescriptorNameId"
-                            class="auto-complete-select"
-                            data-autocomplete-api-url="/api/app/text?IsDescriptor=true"
-                            data-autocomplete-display-property="textName"
-                            data-autocomplete-value-property="id"
-                            data-autocomplete-items-property="items"
-                            data-autocomplete-filter-param-name="filter"
-                            data-autocomplete-parent-selector="#addDescriptor"
-                            data-autocomplete-allow-clear="true">
-                        <!-- You can define selected option(s) here  -->
-                    </select>
-            </abp-modal-body>
-            <abp-modal-footer buttons="@(AbpModalButtons.Save|AbpModalButtons.Close)"></abp-modal-footer>
-        </form>
-    </abp-modal>
+<abp-modal centered="true" scrollable="true" size="Small" id="addDescriptor">
+    <abp-modal-header title="Add new Descriptor"></abp-modal-header>
+    <form method="post">
+        <abp-modal-body>
+            <label>Descriptor Name</label>
+            <select id="DescriptorNameId" asp-for="DescriptorNameId"
+                    class="auto-complete-select"
+                    data-autocomplete-api-url="/api/app/text?IsDescriptor=true"
+                    data-autocomplete-display-property="textName"
+                    data-autocomplete-value-property="id"
+                    data-autocomplete-items-property="items"
+                    data-autocomplete-filter-param-name="filter"
+                    data-autocomplete-parent-selector="#addDescriptor"
+                    data-autocomplete-allow-clear="true">
+                <!-- You can define selected option(s) here  -->
+            </select>
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Save|AbpModalButtons.Close)"></abp-modal-footer>
+    </form>
+</abp-modal>
+<abp-modal centered="true" scrollable="true" size="Small" id="addConstraint">
+    <abp-modal-header title="Add new Constraint"></abp-modal-header>
+    <form method="post">
+        <abp-modal-body>
+            <label>Select Component</label>
+            <select id="DescriptorNameId" asp-for="DescriptorNameId"
+                    class="auto-complete-select"
+                    data-autocomplete-api-url="/api/app/text?IsDescriptor=true"
+                    data-autocomplete-display-property="textName"
+                    data-autocomplete-value-property="id"
+                    data-autocomplete-items-property="items"
+                    data-autocomplete-filter-param-name="filter"
+                    data-autocomplete-parent-selector="#addConstraint"
+                    data-autocomplete-allow-clear="true">
+                <!-- You can define selected option(s) here  -->
+            </select>
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Save|AbpModalButtons.Close)"></abp-modal-footer>
+    </form>
+</abp-modal>
 
     <abp-modal  centered="true" scrollable="true" size="Small" id="addOption">
         <abp-modal-header title="Add New Option"></abp-modal-header>
@@ -132,7 +206,7 @@
                     removeButton.setAttribute('data-busy-text', 'Processing...');
                     removeButton.onclick = function() {
                             // logic for handling remove operation
-                            trial.mvcDemoApplication.pDM.component.removeOption(option.id)
+                        trial.mvcDemoApplication.pDM.component.removeDescriptorOption(option.id)
                                 .then(function (data) {
                                     abp.notify.info('Successfully deleted!');
                                     location.reload()

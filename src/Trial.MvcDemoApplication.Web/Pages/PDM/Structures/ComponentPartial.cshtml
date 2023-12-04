@@ -61,10 +61,10 @@
                 <!-- Add Button -->
                 <abp-button class="btn-icon add-btn" onclick="handleAdd('@Model.Id')" icon="plus" title="Add Sub Component"/>
                 <!-- Remove Button -->
-                <abp-button class="btn-icon remove-btn" onclick="handleRemove('@Model.Id')" icon="times" 
-                    title="Remove Component and its Sub-Components"/>
                 @if (!isRootLevel)
                 {
+                    <abp-button class="btn-icon remove-btn" onclick="handleRemove('@Model.Id')" icon="times"
+                                title="Remove Component and its Sub-Components" />
                     @if (!isFirstSubComponent)
                     {
                         <!-- Up Arrow Button -->
@@ -144,7 +144,6 @@
         // logic for View Component Details
         location.href = "/PDM/Components/ViewModal?id=" + componentId;
     @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
-            alert('View Component Details for ID: ' + componentId);
     }
 </script>
 

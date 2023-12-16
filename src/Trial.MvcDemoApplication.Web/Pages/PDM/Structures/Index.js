@@ -69,7 +69,7 @@ $(function () {
                         items:
                             [
                                 {
-                                    text: l('View Hierarchy'),
+                                    text: l('Structure Construction'),
                                     action: function (data) {
                                         location.href = "/PDM/Structures/ViewHierarchy?id=" + data.record.id;
                                     }

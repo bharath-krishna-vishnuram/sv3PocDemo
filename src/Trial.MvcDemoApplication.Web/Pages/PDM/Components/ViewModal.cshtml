@@ -11,6 +11,7 @@
 @{
     PageLayout.Content.Title = L["PageHeaders:Discriptors"];
     PageLayout.Content.BreadCrumb.Add(L["PageHeaders:StructureConstruction"], "/PDM/Structures/ViewHierarchy?id=" + Model.StructureId);
+    var constraintComponentApiUrl = "/api/app/component/constraint-components/" + Model.Id;
     int i = 0;
 }
 <style>
@@ -54,7 +55,7 @@
                 </button>
                 <abp-button-group size="Small" background="Dark">
                     <!-- Add Button -->
-                    <abp-button button-type="Light" class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addDescriptor" icon="plus" title="Add Descriptor" />
+                    <abp-button button-type="Light" class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addDescriptor" icon="plus" title="Add Descriptor" onclick="clearBindVariables()"  />
                     <!-- Add Button -->
                     <abp-button button-type="Dark" class="btn-icon add-btn" data-bs-toggle="modal" data-bs-target="#addConstraint" icon="plus" title="Add Constraint" />
                 </abp-button-group>
@@ -93,10 +94,10 @@
                         <abp-list-group-item>
                             <div class="accordion" id="@descriptor.Name">
                                 <div class="card-header" id="headingOne">
-                                    <button onclick="display('@descriptor.Id', '@i')" class="btn" type="button" data-bs-toggle="collapse"
+                                    <abp-button button-type="Dark" onclick="display('@descriptor.Id', '@i')" class="btn" data-bs-toggle="collapse"
                                             data-bs-target="#@i" aria-expanded="true" aria-controls="collapseOne">
                                         @descriptor.Name
-                                    </button>
+                                    </abp-button>
                                     <abp-button-group size="Small" background="Dark">
                                         <!-- Remove Button -->
                                         <abp-button class="btn-icon remove-btn" onclick="removeConstraint('@Model.Id', '@descriptor.Id')" icon="times"
@@ -139,19 +140,26 @@
 </abp-modal>
 <abp-modal centered="true" scrollable="true" size="Small" id="addConstraint">
     <abp-modal-header title="Add new Constraint"></abp-modal-header>
-    <form method="post">
+    <form method="post" asp-page-handler="AddConstraint">
         <abp-modal-body>
-            <label>Select Component</label>
-            <select id="DescriptorNameId" asp-for="DescriptorNameId"
+            <input type="hidden" asp-for="Id" value="">
+            <label>Constraint Component</label>
+            <select id="ConstraintComponent" asp-for="ConstraintComponentId" onchange="onComponentChange('@Model.Id')"
                     class="auto-complete-select"
-                    data-autocomplete-api-url="/api/app/text?IsDescriptor=true"
-                    data-autocomplete-display-property="textName"
+                    data-autocomplete-api-url=@constraintComponentApiUrl
+                    data-autocomplete-display-property="name"
                     data-autocomplete-value-property="id"
-                    data-autocomplete-items-property="items"
-                    data-autocomplete-filter-param-name="filter"
+                    data-autocomplete-items-property=""
+                    data-autocomplete-filter-param-name="ComponentNameFilter"
                     data-autocomplete-parent-selector="#addConstraint"
                     data-autocomplete-allow-clear="true">
                 <!-- You can define selected option(s) here  -->
+                <option value="">Select Component</option>
+            </select>
+            <label>Constraint Descriptor</label>
+            <!-- "/api/app/component/b5aa464f-be93-435b-af4c-23912d435b48"-->
+            <select id="ConstraintDescriptor" asp-for="ConstraintDescriptorId" disabled>
+                <option value="">Select Descriptor</option>
             </select>
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Save|AbpModalButtons.Close)"></abp-modal-footer>
@@ -234,6 +242,45 @@
                 location.reload()
             })
     }
+    function clearBindVariables() {
+        document.getElementById('AssociatedDescriptorId').value = '';
+        document.getElementById('ConstraintComponentId').value = '';
+        document.getElementById('ConstraintDescriptorId').value = '';
+        document.getElementById('DescriptorNameId').value = '';
+    }
+
+    function onComponentChange(cid) {
+        var ConstraintComponentId = document.getElementById('ConstraintComponent').value;
+        var descriptorDropdown = document.getElementById('ConstraintDescriptor');
+        document.getElementById('Id').value = cid;
+
+        if (ConstraintComponentId) {
+            // Enable the second dropdown
+            descriptorDropdown.removeAttribute('disabled');
+
+            // Call your function and populate the second dropdown
+            trial.mvcDemoApplication.pDM.component.get(ConstraintComponentId)
+                .then(function (response) {
+                    // Check if descriptors are available
+                    if (response.descriptors && response.descriptors.length > 0) {
+                        descriptorDropdown.innerHTML = '<option value="">Select Descriptor</option>';
+                        response.descriptors.forEach(function (descriptor) {
+                            var option = new Option(descriptor.name, descriptor.id);
+                            descriptorDropdown.add(option);
+                        });
+                    } else {
+                        // Handle the scenario when descriptors array is empty
+                        descriptorDropdown.innerHTML = '<option value="">No descriptors available</option>';
+                    }
+                })
+
+        } else {
+            // If no component is selected, disable and clear the second dropdown
+            descriptorDropdown.setAttribute('disabled', '');
+            descriptorDropdown.innerHTML = '<option value="">Select Descriptor</option>';
+        }
+    }
+
     function handleOptionAdd(componentId, descriptorId) {
             document.getElementById('AssociatedDescriptorId').value = descriptorId;
             document.getElementById('Id').value = componentId;

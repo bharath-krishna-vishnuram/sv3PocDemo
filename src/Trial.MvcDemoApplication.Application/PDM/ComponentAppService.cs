@@ -139,9 +139,9 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
     }
     public async Task<List<IdNameDto<Guid>>> GetAllConstraintComponentsAsync(Guid ComponentId, string? ComponentNameFilter)
     {
-        var componentQuery = await Repository.WithDetailsAsync(rec => rec.AssociatedStructureElement);
-        var structureElement = await AsyncExecuter.FirstOrDefaultAsync(componentQuery.Where(rec => rec.Id == ComponentId)
-            .Select(rec => rec.AssociatedStructureElement))!
+        var elementQuery = await _structureElementRepository.GetQueryableAsync();
+        var structureElement = await AsyncExecuter.FirstOrDefaultAsync(elementQuery.Where(rec => rec.SelectedComponentId == ComponentId)
+            .Select(rec => new { rec.Id, rec.AssociatedStructureId }))!
             ?? throw new EntityNotFoundException($"Component with id:{ComponentId} not found");
         var structure = await GetStructureWithHierarchyDetailsAsync(structureElement.AssociatedStructureId);
         List<Component> allowedComponents = structure.GetComponentsBeforeElement(structureElement.Id);

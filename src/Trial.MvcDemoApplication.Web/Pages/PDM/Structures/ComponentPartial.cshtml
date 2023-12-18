@@ -80,6 +80,9 @@
                     <!-- View Button -->
                     <abp-button class="btn-icon" onclick="handleView('@Model.Id')" icon="eye"
                                 title="View Component Details"/>
+                    <!-- View Button -->
+                    <abp-button class="btn-icon" onclick="handleVariantView('@Model.Id')" icon="alt"
+                                title="View Variant Sets for component"/>
                 }
             </abp-button-group>
         </div>
@@ -143,7 +146,11 @@
     function handleView(componentId) {
         // logic for View Component Details
         location.href = "/PDM/Components/ViewModal?id=" + componentId;
-    @*trial.mvcDemoApplication.pDM.component.get(id).done(function (result) { console.log(result); });*@
     }
+    function handleVariantView(componentId) {
+        // logic for View Component Details
+        location.href = "/PDM/Variations/Index?id=" + componentId;
+    }
+    
 </script>
 

@@ -20,12 +20,15 @@ public class PdmStoreApplicationAutoMapperProfile : Profile
         CreateMap<Structure, StructureDto>();
         CreateMap<Structure, StructureHierarchyDto>();
         CreateMap<Component, ComponentHierarchyDto>()
-            .ForMember(dest => dest.SubComponents, options => options.
+            .ForMember(dst => dst.SubComponents, options => options.
             MapFrom(src => src.SubComponents.OrderBy(rec => rec.AssociatedStructureElement.ElementOrder)));
 
         CreateMap<Structure, IdNameDto<Guid>>();
-            CreateMap<Component, IdNameDto<Guid>>();
-            CreateMap<ComponentDescriptor, IdNameDto<Guid>>();
-            CreateMap<DescriptorOption, IdNameDto<Guid>>();
+        CreateMap<Component, IdNameDto<Guid>>();
+        CreateMap<ComponentDescriptor, IdNameDto<Guid>>();
+        CreateMap<DescriptorOption, IdNameDto<Guid>>();
+        CreateMap<VariantOption, VariantOptionDto>()
+            .ForMember(dst => dst.AssociatedDescriptor, options => options.
+            MapFrom(src => src.AssociatedDescriptorOption.AssociatedDescriptor));
     }
 }

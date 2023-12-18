@@ -70,6 +70,12 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         return (subComponents, componentDetails);
     }
 
+    protected override async Task<ComponentDetailsDto> MapToGetOutputDtoAsync(Component entity)
+    {
+        var returnData = await base.MapToGetOutputDtoAsync(entity);
+        returnData.HasVariantsGenerated = await Repository.AnyAsync(t => t.Id == entity.Id && t.VariantSets.Any());
+        return returnData;
+    }
     protected async override Task<Component> MapToEntityAsync(CreateUpdateComponentDto createInput)
     {
         var query = await Repository.WithDetailsAsync(rec => rec.SubComponents, 
@@ -169,6 +175,47 @@ public class ComponentAppService : CrudAppService<Component, ComponentDetailsDto
         if (component.ConstraintDescriptors.RemoveAll(rec => rec.Id == DescriptorId) == 0)
             throw new UserFriendlyException($"Descriptor constraint not available for component");
     }
+
+
+    public async Task<List<ComponentVariantSetDto>> GetVariantOptionsAsync(Guid ComponentId)
+    {
+        var query = await _optionRepository.WithDetailsAsync(rec => rec.AssociatedDescriptor.AssociatedComponent.VariantSets, rec => rec.AssociatedDescriptor.ConstraintComponents, 
+            rec => rec.VariantOptions);
+        var options = await AsyncExecuter.ToListAsync(query.Where(rec => rec.AssociatedDescriptor.AssociatedComponent.Id == ComponentId 
+        || rec.AssociatedDescriptor.ConstraintComponents.Any(t => t.Id == ComponentId)));
+        var component = options.Select(rec => rec.AssociatedDescriptor.AssociatedComponent).FirstOrDefault()!
+            ?? throw new UserFriendlyException($"Options with Component id:{ComponentId} not found");
+        if (!component.VariantSets.Any())
+        {
+            component.SetVariants();
+            await Repository.UpdateAsync(component);
+        }
+        return ObjectMapper.Map<List<ComponentVariantSet>, List<ComponentVariantSetDto>>(component.VariantSets);
+    }
+    public async Task UpdateVariantSetStatusAsync(Guid VariantSetId, VariantStatus status)
+    {
+        var componentQuery = await Repository.WithDetailsAsync(rec => rec.VariantSets);
+        var variantSet = await AsyncExecuter.FirstOrDefaultAsync(componentQuery.SelectMany(rec => rec.VariantSets).Where(rec => rec.Id == VariantSetId));
+        if (variantSet.Status == VariantStatus.NotSet)
+        {
+            variantSet.UpdateVariantSet(variantSet.Description, status);
+        }
+
+    }
+}
+[AutoMap(typeof(ComponentVariantSet))]
+public class ComponentVariantSetDto : EntityDto<Guid>
+{
+    public VariantStatus Status { get; set; }
+    public List<VariantOptionDto> VariantOptions { get; set; } = new();
+}
+
+public class VariantOptionDto : EntityDto<Guid>
+{
+
+    public int OrderId { get; set; }
+    public IdNameDto<Guid> AssociatedDescriptorOption { get; set; } = null!;
+    public IdNameDto<Guid> AssociatedDescriptor { get; set; } = null!;
 }
 
 public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, ComponentDto, Guid, ComponentDto, CreateUpdateComponentDto, CreateUpdateComponentDto>
@@ -187,6 +234,8 @@ public interface IComponentAppService : ICrudAppService<ComponentDetailsDto, Com
     Task<List<IdNameDto<Guid>>> GetAllConstraintComponentsAsync(Guid ComponentId, string? ComponentNameFilter);
     Task AddConstraintDescriptorAsync(Guid ComponentId, Guid DescriptorId);
     Task RemoveConstraintDescriptorAsync(Guid ComponentId, Guid DescriptorId);
+
+    Task<List<ComponentVariantSetDto>> GetVariantOptionsAsync(Guid ComponentId);
 }
 
 [AutoMap(typeof(Component))]
@@ -206,6 +255,7 @@ public class ComponentDetailsDto : IdNameDto<Guid>
     public List<IdNameDto<Guid>> Descriptors { get; set; } = new();
     public List<IdNameDto<Guid>> SubComponents { get; set; } = new();
     public List<IdNameDto<Guid>> ConstraintDescriptors { get; set; } = new();
+    public bool HasVariantsGenerated { get; internal set; }
 }
 
 [AutoMap(typeof(ComponentDescriptor))]

@@ -1,5 +1,111 @@
 ﻿@page
 @model Trial.MvcDemoApplication.Web.Pages.Variations.IndexModel
+@using Trial.MvcDemoApplication.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<MvcDemoApplicationResource> L
+
+@using Trial.MvcDemoApplication.PDM;
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal;
+
+@inject Volo.Abp.AspNetCore.Mvc.UI.Layout.IPageLayout PageLayout
 @{
+    PageLayout.Content.Title = L["Variant Sets"];
+    PageLayout.Content.BreadCrumb.Add(L["PageHeaders:StructureConstruction"], "/PDM/Structures/ViewHierarchy?id=" + Model.StructureId);
+    //var constraintComponentApiUrl = "/api/app/component/constraint-components/" + Model.Id;
+    int i = 1;
 }
-<h2>Variations</h2>
+<style>
+
+    /* General button styles */
+    .btn-icon:hover {
+        background-color: #d0d0d0; /* Darker grey on hover */
+    }
+
+    .add-btn .fas {
+        color: green;
+    }
+
+    .remove-btn .fas {
+        color: red;
+    }
+
+    .up-btn .fas, .down-btn .fas {
+        color: #333; /* Dark gray, adjust as needed */
+    }
+
+    /* Icons within the buttons */
+    .btn-icon i {
+        font-size: 12px; /* Size of the icon */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+</style>
+<abp-card background="Light" text-color="Dark" border="Success" class="mb-3">
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                @L["Component Variant Sets"]
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+    <abp-card-body background="Light" text-color="Dark" border="Success" size-md="_1">
+        @{
+            // Get all unique descriptor names
+            var uniqueDescriptorNames = Model.Variants.SelectMany(v => v.VariantOptions).OrderBy(rec => rec.OrderId)
+            .Select(vo => vo.AssociatedDescriptor.Name)
+            .Distinct()
+            .OrderBy(name => name)
+            .ToList();
+
+            // Function to get the value by descriptor name for a variant
+            Func<ComponentVariantSetDto, string, string> getValueByDescriptorName = (variant, name) =>
+            {
+                var option = variant.VariantOptions.FirstOrDefault(vo => vo.AssociatedDescriptor.Name == name);
+                return option != null ? option.AssociatedDescriptorOption.Name : "N/A";
+            };
+        }
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="th">Sl No.</th>
+                    @foreach (var descriptorName in uniqueDescriptorNames)
+                    {
+                        <th>@descriptorName</th>
+                    }
+                    <th class="th">Status</th>
+                    <th class="th">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Variants)
+                {
+                    <tr>
+                        <td class="td">@i</td>
+                        @foreach (var descriptorName in uniqueDescriptorNames)
+                        {
+                            <td>@getValueByDescriptorName(item, descriptorName)</td>
+                        }
+                        <td>@item.Status</td>
+                        <td>
+                            <abp-button-group>
+                                <abp-dropdown>
+                                    <abp-dropdown-button size ="Small" button-type="Light" text="Update Status" />
+                                    <abp-dropdown-menu>
+                                        <abp-dropdown-item href="#"> Set as Valid </abp-dropdown-item>
+                                        <abp-dropdown-item href="#"> Set as Invalid </abp-dropdown-item>
+                                    </abp-dropdown-menu>
+                                </abp-dropdown>
+                            </abp-button-group>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    </abp-card-body>
+</abp-card>
